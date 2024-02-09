@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="fount_fragment">#F5FFFF</color>
     <color name="dark_primary">#455A64</color>
     <color name="light_primary">#CFD8DC</color>
     <color name="primary_color">#607D8B</color>
@@ -10,5 +11,6 @@
     <color name="secondary_text">#757575</color>
     <color name="divider">#BDBDBD</color>
     <color name="font_card">#E5E7ED</color>
+    <color name="yellow">#FFC107</color>
 
 </resources>

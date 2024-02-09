@@ -5,3 +5,14 @@ plugins {
     id("com.android.library") version "7.2.2" apply false
 }
 
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.0.4")
+        classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+    }
+}

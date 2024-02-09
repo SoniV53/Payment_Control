@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.control.paymentcontrol.database.entities.YearsEntity
 import com.control.paymentcontrol.databinding.ItemCarrouselBinding
-import com.control.paymentcontrol.models.years.CreateNewYear
+import com.control.roomdatabase.entities.YearsEntity
 
 class AdapterCarrousel (var listYear: List<YearsEntity>): RecyclerView.Adapter<AdapterCarrousel.ViewHolder>(){
 

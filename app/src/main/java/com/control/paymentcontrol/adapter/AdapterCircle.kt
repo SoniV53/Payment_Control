@@ -38,4 +38,10 @@ class AdapterCircle (var count: Int,var select:Int,var context:Context): Recycle
         this.select = select
         notifyDataSetChanged()
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateSize(count:Int){
+        this.count = count
+        notifyDataSetChanged()
+    }
 }

@@ -1,24 +1,31 @@
 package com.control.paymentcontrol.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
-import com.control.paymentcontrol.adapter.AdapterDataMonth
-import com.control.paymentcontrol.database.entities.YearsEntity
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
-import com.control.paymentcontrol.models.years.CreateNewYear
-import com.control.paymentcontrol.repository.BaseRepository
-import com.control.paymentcontrol.repository.response.YearItemRepository
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBar
+import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
+import com.control.roomdatabase.entities.YearsEntity
+import com.control.roomdatabase.repository.ui.YearItemRepository
+import com.control.roomdatabase.utils.Status.SUCCESS
+import com.example.awesomedialog.AwesomeDialog
+import com.example.awesomedialog.background
+import com.example.awesomedialog.body
+import com.example.awesomedialog.icon
+import com.example.awesomedialog.onNegative
+import com.example.awesomedialog.onPositive
+import com.example.awesomedialog.title
 import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
-import java.util.Arrays
 
 class HomeFragment : BaseFragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -26,10 +33,14 @@ class HomeFragment : BaseFragment() {
     private lateinit var listYear: List<YearsEntity>
     private lateinit var yearRepository: YearItemRepository
     private lateinit var adapterCarrousel: AdapterCarrousel
+    private lateinit var adapterCircle: AdapterCircle
+    private lateinit var viewModel: ServicePaymentViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         yearRepository = YearItemRepository(requireActivity())
+        viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -48,8 +59,7 @@ class HomeFragment : BaseFragment() {
         })
 
         binding.addAction.setOnClickListener {
-            yearRepository.getAddYear(YearsEntity(0, "2024", "Enero - Febrero", "1500"))
-            updateRecyclerViewCarousel()
+            setAddYear()
         }
 
 
@@ -59,7 +69,7 @@ class HomeFragment : BaseFragment() {
 
     fun recyclerViewCarousel(){
         adapterCarrousel = AdapterCarrousel(listYear)
-        var adapterCircle = AdapterCircle(listYear.size,selectPosition,requireActivity())
+        adapterCircle = AdapterCircle(listYear.size,selectPosition,requireActivity())
 
         binding.carouselRecyclerview.adapter = adapterCarrousel
         binding.carouselRecyclerview.apply {
@@ -71,7 +81,6 @@ class HomeFragment : BaseFragment() {
         binding.carouselRecyclerview.setItemSelectListener(object : CarouselLayoutManager.OnSelected {
             override fun onItemSelected(position: Int) {
                 adapterCircle.updateSelect(position)
-
             }
         })
         binding.circlesRecyclerview.adapter = adapterCircle
@@ -84,8 +93,28 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+    /**
+     * ADD NEW YEAR CONTROLLER
+     */
+    private fun setAddYear(){
+        viewModel.setAddYearDataBase(requireActivity(), YearsEntity(0,"","",""))
+        viewModel.getAddYearDataBase().observe(requireActivity()) {responseBase ->
+            if (responseBase.status == SUCCESS){
+                updateRecyclerViewCarousel()
+            }else{
+                AwesomeDialog.build(requireActivity())
+                    .title("Error")
+                    .body("Faltan Datos que completar")
+                    .icon(R.drawable.exclamation_triangle_solid)
+                    .onPositive("OK",R.color.accent) {
+                        Log.d("TAG", "positive ")
+                    }
+            }
+        }
+    }
     fun updateRecyclerViewCarousel(){
         listYear = yearRepository.getByAllYears()
         adapterCarrousel.updateSelect(listYear)
+        adapterCircle.updateSize(listYear.size)
     }
 }

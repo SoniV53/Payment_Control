@@ -1,9 +1,9 @@
-package com.control.paymentcontrol.database.entities
+package com.control.roomdatabase.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.control.paymentcontrol.database.utils.ConstantsTables.YEAR_TABLE
+import com.control.roomdatabase.utils.ConstantsNames.YEAR_TABLE
 
 @Entity(tableName = YEAR_TABLE)
 data class YearsEntity (

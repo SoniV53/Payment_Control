@@ -1,4 +1,4 @@
-package com.control.paymentcontrol.repository
+package com.control.roomdatabase.repository.models
 
 data class ResponseBase(
     var status:String,
