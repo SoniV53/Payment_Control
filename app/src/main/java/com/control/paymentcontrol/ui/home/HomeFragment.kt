@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
 import com.control.paymentcontrol.adapter.AdapterDataMonth
+import com.control.paymentcontrol.database.entities.YearsEntity
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
 import com.control.paymentcontrol.models.years.CreateNewYear
+import com.control.paymentcontrol.repository.BaseRepository
+import com.control.paymentcontrol.repository.response.YearItemRepository
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBar
 import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
@@ -21,6 +23,14 @@ import java.util.Arrays
 class HomeFragment : BaseFragment() {
     private lateinit var binding: FragmentHomeBinding
     private var selectPosition: Int = 0
+    private lateinit var listYear: List<YearsEntity>
+    private lateinit var yearRepository: YearItemRepository
+    private lateinit var adapterCarrousel: AdapterCarrousel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        yearRepository = YearItemRepository(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,43 +38,30 @@ class HomeFragment : BaseFragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
 
+        listYear = yearRepository.getByAllYears()
+        recyclerViewCarousel()
+
         onClickMoreNavbar(object:OnActionButtonNavBar{
             override fun onActionMore() {
                 Toast.makeText(requireContext(), "Prueba", Toast.LENGTH_SHORT).show()
             }
         })
-        val listYear = mutableListOf<CreateNewYear>()
-        listYear.add(CreateNewYear("2024","Enero - Febrero","Q123"))
-        listYear.add(CreateNewYear("2025","Enero - Febrero","Q123"))
-        listYear.add(CreateNewYear("2026","Enero - Febrero","Q123"))
 
-        val listMonth = mutableListOf<CreateNewYear>()
-        listMonth.add(CreateNewYear("Enero","Q123","Q123"))
-        listMonth.add(CreateNewYear("Febrero","Q123","Q123"))
+        binding.addAction.setOnClickListener {
+            yearRepository.getAddYear(YearsEntity(0, "2024", "Enero - Febrero", "1500"))
+            updateRecyclerViewCarousel()
+        }
 
-        val listMonth2 = mutableListOf<CreateNewYear>()
 
-        listMonth2.add(CreateNewYear("Enero","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Febrero","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear("Marzo","Q123","Q123"))
-        listMonth2.add(CreateNewYear(" ","Q123","Q123"))
 
-        val listMonth3 = Arrays.asList(resources.getStringArray(R.array.month))
+        return binding.root
+    }
 
-        var adapter = AdapterCarrousel(listYear)
-        var adapterMonth = AdapterDataMonth(listMonth)
+    fun recyclerViewCarousel(){
+        adapterCarrousel = AdapterCarrousel(listYear)
         var adapterCircle = AdapterCircle(listYear.size,selectPosition,requireActivity())
 
-        binding.carouselRecyclerview.adapter = adapter
+        binding.carouselRecyclerview.adapter = adapterCarrousel
         binding.carouselRecyclerview.apply {
             set3DItem(false)
             setAlpha(true)
@@ -74,10 +71,9 @@ class HomeFragment : BaseFragment() {
         binding.carouselRecyclerview.setItemSelectListener(object : CarouselLayoutManager.OnSelected {
             override fun onItemSelected(position: Int) {
                 adapterCircle.updateSelect(position)
-                adapterMonth.updateData(listMonth2)
+
             }
         })
-
         binding.circlesRecyclerview.adapter = adapterCircle
         binding.circlesRecyclerview.apply {
             set3DItem(false)
@@ -86,12 +82,10 @@ class HomeFragment : BaseFragment() {
             setFlat(false)
             setIsScrollingEnabled(true)
         }
-
-        binding.dataRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        binding.dataRecyclerView.setHasFixedSize(true)
-        binding.dataRecyclerView.adapter = adapterMonth
-
-        return binding.root
     }
 
+    fun updateRecyclerViewCarousel(){
+        listYear = yearRepository.getByAllYears()
+        adapterCarrousel.updateSelect(listYear)
+    }
 }
