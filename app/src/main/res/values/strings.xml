@@ -2,8 +2,9 @@
     <string name="app_name">Control Gastos</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <string name="title_navBar">Control de Gastos</string>
+
+    <string name="accept">Aceptar</string>
 
     <string-array name="month">
         <item>Enero</item>
@@ -19,5 +20,16 @@
         <item>Noviembre</item>
         <item>Diciembre</item>
     </string-array>
+
+    <string name="menu_add_year">Agregar Año</string>
+
+    <string name="select_year">Seleccione un Año</string>
+
+    <string name="title_dialog">Alerta</string>
+    <string name="title_dialog_success">Muy bien</string>
+    <string name="body_dialog_message_data">Aún Faltan Datos por llenar</string>
+
+    <string name="body_dialog_message_success">Se creo correctamente</string>
+
 
 </resources>

@@ -1,5 +1,5 @@
 package com.control.paymentcontrol.ui.utils
 
-interface OnActionButtonNavBar {
-    fun onActionMore()
+interface OnActionButtonNavBarMenu {
+    fun onActionAddYear()
 }

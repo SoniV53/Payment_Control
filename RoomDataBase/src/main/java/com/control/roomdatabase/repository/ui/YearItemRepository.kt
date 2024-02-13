@@ -11,6 +11,8 @@ import com.control.roomdatabase.utils.Status.CODE_400
 import com.control.roomdatabase.utils.Status.CODE_401
 import com.control.roomdatabase.utils.Status.ERROR
 import com.control.roomdatabase.utils.Status.SUCCESS
+import com.google.gson.Gson
+import java.util.Calendar
 
 class YearItemRepository (context: Context) : BaseRepository(context) {
     private var yearDao: YearsDao = controlDataBase.getYearDao()
@@ -27,7 +29,7 @@ class YearItemRepository (context: Context) : BaseRepository(context) {
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
         val yearName:YearsEntity = orderByIdNameYear(year.name.toString())
 
-        response.value = if (yearName != null && !isEmptyItem(year.name.toString())) {
+        response.value = if (yearName == null && !isEmptyItem(year.name.toString())) {
             yearDao.insertYear(year)
             ResponseBase(SUCCESS, CODE_200)
         }else if(isEmptyItem(year.name.toString())) {
@@ -37,5 +39,26 @@ class YearItemRepository (context: Context) : BaseRepository(context) {
         }
 
         return response
+    }
+
+    fun filterYearList():Array<String>{
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val listYear = arrayOf(addItemYear(year,0), addItemYear(year,1), addItemYear(year,2), addItemYear(year,3), addItemYear(year,4))
+        val filterListYear = mutableListOf<String>()
+
+        for (item in listYear) {
+            val yearName:YearsEntity = orderByIdNameYear(item)
+
+            if (yearName == null){
+                filterListYear.add(item)
+            }
+        }
+
+        return filterListYear.toTypedArray()
+    }
+
+    fun addItemYear(year:Int,sum:Int):String{
+        return (year + sum).toString()
     }
 }

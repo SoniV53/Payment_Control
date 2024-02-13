@@ -1,37 +1,29 @@
 package com.control.paymentcontrol.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
 import com.control.paymentcontrol.ui.base.BaseFragment
-import com.control.paymentcontrol.ui.utils.OnActionButtonNavBar
+import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.YearsEntity
 import com.control.roomdatabase.repository.ui.YearItemRepository
 import com.control.roomdatabase.utils.Status.SUCCESS
-import com.example.awesomedialog.AwesomeDialog
-import com.example.awesomedialog.background
-import com.example.awesomedialog.body
-import com.example.awesomedialog.icon
-import com.example.awesomedialog.onNegative
-import com.example.awesomedialog.onPositive
-import com.example.awesomedialog.title
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
+import java.util.Calendar
 
 class HomeFragment : BaseFragment() {
     private lateinit var binding: FragmentHomeBinding
     private var selectPosition: Int = 0
     private lateinit var listYear: List<YearsEntity>
-    private lateinit var yearRepository: YearItemRepository
     private lateinit var adapterCarrousel: AdapterCarrousel
     private lateinit var adapterCircle: AdapterCircle
     private lateinit var viewModel: ServicePaymentViewModel
@@ -39,7 +31,6 @@ class HomeFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        yearRepository = YearItemRepository(requireActivity())
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
     }
 
@@ -49,17 +40,27 @@ class HomeFragment : BaseFragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
 
-        listYear = yearRepository.getByAllYears()
+        listYear = viewModel.fullByYears(requireActivity())
         recyclerViewCarousel()
 
-        onClickMoreNavbar(object:OnActionButtonNavBar{
-            override fun onActionMore() {
-                Toast.makeText(requireContext(), "Prueba", Toast.LENGTH_SHORT).show()
+        onClickMoreNavbar(object:OnActionButtonNavBarMenu{
+            override fun onActionAddYear() {
+                //setAddYear()
+                //val items = arrayOf("Item 1", "Item 2", "Item 3")
+                val items = viewModel.getYearList(requireActivity())
+
+                MaterialAlertDialogBuilder(requireActivity())
+                    .setTitle(resources.getString(R.string.select_year))
+                    .setItems(items) { dialog, which ->
+                        setAddYear(items[which.inc() - 1])
+                    }
+                    .show()
             }
+
         })
 
         binding.addAction.setOnClickListener {
-            setAddYear()
+            viewModel.getYearList(requireActivity())
         }
 
 
@@ -96,24 +97,22 @@ class HomeFragment : BaseFragment() {
     /**
      * ADD NEW YEAR CONTROLLER
      */
-    private fun setAddYear(){
-        viewModel.setAddYearDataBase(requireActivity(), YearsEntity(0,"","",""))
+    private fun setAddYear(yearItem:String){
+        viewModel.setAddYearDataBase(requireActivity(), YearsEntity(yearItem))
         viewModel.getAddYearDataBase().observe(requireActivity()) {responseBase ->
             if (responseBase.status == SUCCESS){
                 updateRecyclerViewCarousel()
+                dialogMessageDefault()
             }else{
-                AwesomeDialog.build(requireActivity())
-                    .title("Error")
-                    .body("Faltan Datos que completar")
-                    .icon(R.drawable.exclamation_triangle_solid)
-                    .onPositive("OK",R.color.accent) {
-                        Log.d("TAG", "positive ")
-                    }
+                dialogMessageDefault(
+                    getStringRes(R.string.body_dialog_message_data),
+                    1
+                )
             }
         }
     }
     fun updateRecyclerViewCarousel(){
-        listYear = yearRepository.getByAllYears()
+        listYear = viewModel.fullByYears(requireActivity())
         adapterCarrousel.updateSelect(listYear)
         adapterCircle.updateSize(listYear.size)
     }
