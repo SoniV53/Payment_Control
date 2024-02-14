@@ -1,12 +1,17 @@
 package com.control.paymentcontrol.ui.base
 
+import android.app.Notification.Action
+import android.content.DialogInterface.OnClickListener
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
+import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.example.awesomedialog.AwesomeDialog
 import com.example.awesomedialog.body
 import com.example.awesomedialog.icon
+import com.example.awesomedialog.onNegative
 import com.example.awesomedialog.onPositive
 import com.example.awesomedialog.position
 import com.example.awesomedialog.title
@@ -38,9 +43,9 @@ open class BaseFragment : Fragment() {
     protected fun getStringRes(resource:Int):String{
         return requireActivity().getString(resource)
     }
-    protected fun dialogMessageDefault(body:String = getStringRes(R.string.body_dialog_message_success),type:Int = 0){
+    protected fun dialogMessageDefault(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),type:Int = 0){
         AwesomeDialog.build(requireActivity())
-            .title(getStringRes(R.string.title_dialog))
+            .title(title)
             .body(body)
             .icon(
                     if (type == 0) R.drawable.check_circle_solid
@@ -49,6 +54,35 @@ open class BaseFragment : Fragment() {
             )
             .position(AwesomeDialog.POSITIONS.CENTER)
             .onPositive(getStringRes(R.string.accept), R.drawable.background_button_accept) {}
+    }
+
+    protected fun dialogMessageTitle(title:String = getStringRes(R.string.success),type:Int = 0){
+        AwesomeDialog.build(requireActivity())
+            .title(title)
+            .icon(
+                if (type == 0) R.drawable.check_circle_solid
+                else if(type == 1)R.drawable.exclamation_triangle_solid
+                else R.drawable.error_solid
+            )
+            .position(AwesomeDialog.POSITIONS.CENTER)
+            .onPositive(getStringRes(R.string.accept), R.drawable.background_button_accept) {}
+    }
+
+    protected fun dialogMessageOnAction(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),
+            type:Int = 0,titleButton:String = "",listener:OnClickInterface){
+
+        AwesomeDialog.build(requireActivity())
+            .title(title)
+            .body(body)
+            .icon(
+                if (type == 0) R.drawable.check_circle_solid
+                else if(type == 1)R.drawable.exclamation_triangle_solid
+                else R.drawable.error_solid
+            )
+            .position(AwesomeDialog.POSITIONS.CENTER)
+            .onPositive(titleButton,R.drawable.background_button_accept) {
+                listener.onClickAction()
+            }
     }
 
 }

@@ -17,8 +17,10 @@ import java.util.Calendar
 class YearItemRepository (context: Context) : BaseRepository(context) {
     private var yearDao: YearsDao = controlDataBase.getYearDao()
 
-    fun getByAllYears() : List<YearsEntity>{
-        return if (yearDao.getAllYears() != null) yearDao.getAllYears() else ArrayList()
+    fun getByAllYears() : MutableLiveData<List<YearsEntity>>{
+        val response:MutableLiveData<List<YearsEntity>> = MutableLiveData()
+        response.value = if (yearDao.getAllYears() != null) yearDao.getAllYears() else ArrayList()
+        return response
     }
 
     fun orderByIdNameYear(name:String) : YearsEntity{
@@ -34,6 +36,18 @@ class YearItemRepository (context: Context) : BaseRepository(context) {
             ResponseBase(SUCCESS, CODE_200)
         }else if(isEmptyItem(year.name.toString())) {
             ResponseBase(ERROR, CODE_401)
+        }else {
+            ResponseBase(ERROR, CODE_400)
+        }
+
+        return response
+    }
+
+    fun getDeleteYear(year:YearsEntity) :  MutableLiveData<ResponseBase>{
+        val response:MutableLiveData<ResponseBase> = MutableLiveData()
+        response.value = if (year != null) {
+            yearDao.deleteYear(year)
+            ResponseBase(SUCCESS, CODE_200)
         }else {
             ResponseBase(ERROR, CODE_400)
         }

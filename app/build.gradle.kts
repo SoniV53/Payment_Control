@@ -66,6 +66,6 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.4.3")
 
     implementation ("com.github.chnouman:AwesomeDialog:1.0.5")
-
+    implementation ("com.google.code.gson:gson:2.10.1")
 
 }

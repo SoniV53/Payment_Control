@@ -6,7 +6,14 @@ import com.control.roomdatabase.ControlDataBase
 import com.control.roomdatabase.utils.ConstantsNames
 
 open class BaseRepository(context: Context) {
-    protected val controlDataBase : ControlDataBase by lazy {
+
+    protected val controlDataBase : ControlDataBase =
+        Room.databaseBuilder(context, ControlDataBase::class.java, ConstantsNames.CONTROL_DATABASE)
+        .allowMainThreadQueries()
+        .fallbackToDestructiveMigration()
+        .build()
+
+    protected val room : ControlDataBase by lazy {
         Room.databaseBuilder(context, ControlDataBase::class.java, ConstantsNames.CONTROL_DATABASE)
             .allowMainThreadQueries()
             .fallbackToDestructiveMigration()
