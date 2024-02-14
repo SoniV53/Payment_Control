@@ -41,7 +41,7 @@ class MonthItemRepository (context: Context) : BaseRepository(context) {
             monthDao.insertMonth(month)
             ResponseBase(SUCCESS, CODE_200)
         }else if(isEmptyItem(month.name.toString())) {
-            ResponseBase(ERROR, CODE_401)
+            ResponseBase(ERROR, CODE_401,"Seleccione un Mes")
         }else if(monthName != null){
                 ResponseBase(ERROR, CODE_401,"Este Mes ya fue agregado")
         }else {

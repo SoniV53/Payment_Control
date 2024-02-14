@@ -36,6 +36,8 @@
 
     <string name="body_dialog_message_success">Se creo correctamente</string>
     <string name="empty_title">Ag</string>
+    <string name="add_month">Agregar Mes</string>
+
 
 
 </resources>

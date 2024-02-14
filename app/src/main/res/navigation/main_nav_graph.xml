@@ -14,5 +14,14 @@
         android:id="@+id/homeFragment"
         android:name="com.control.paymentcontrol.ui.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_addPaymentFragment"
+            app:destination="@id/addPaymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPaymentFragment"
+        android:name="com.control.paymentcontrol.ui.payment.AddPaymentFragment"
+        android:label="fragment_add_payment"
+        tools:layout="@layout/fragment_add_payment" />
 </navigation>

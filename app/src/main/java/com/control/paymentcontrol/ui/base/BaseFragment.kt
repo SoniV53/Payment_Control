@@ -15,9 +15,11 @@ import com.example.awesomedialog.onNegative
 import com.example.awesomedialog.onPositive
 import com.example.awesomedialog.position
 import com.example.awesomedialog.title
+import com.google.gson.Gson
 
 open class BaseFragment : Fragment() {
     private lateinit var interfaceNavBar: InterfaceNavBar
+    protected var gson = Gson()
 
     protected fun hiddenNavbar(){
         if (requireActivity() is InterfaceNavBar) {

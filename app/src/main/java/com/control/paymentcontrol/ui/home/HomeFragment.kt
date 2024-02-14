@@ -6,13 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
+import com.control.paymentcontrol.adapter.AdapterDataMonth
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
+import com.control.paymentcontrol.ui.utils.PutArgumentsString.YEAR_SELECT
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.YearsEntity
@@ -34,8 +38,11 @@ class HomeFragment : BaseFragment() {
     private lateinit var listYear: List<YearsEntity>
     private lateinit var adapterCarrousel: AdapterCarrousel
     private lateinit var adapterCircle: AdapterCircle
+    private lateinit var adapterMonth: AdapterDataMonth
     private lateinit var viewModel: ServicePaymentViewModel
     private var positionCarrousel: Int = 0
+    private lateinit var yearItem:YearsEntity
+    private lateinit var listMonth: List<MonthEntity>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +57,7 @@ class HomeFragment : BaseFragment() {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
 
         getOrderListYear()
+
 
         onClickMoreNavbar(object:OnActionButtonNavBarMenu{
             override fun onActionAddYear() {
@@ -66,7 +74,9 @@ class HomeFragment : BaseFragment() {
         })
 
         binding.addAction.setOnClickListener {
-            setAddMonth()
+            val bundle = Bundle()
+            bundle.putString(YEAR_SELECT,gson.toJson( gerYearItem()))
+            findNavController().navigate(R.id.action_homeFragment_to_addPaymentFragment,bundle)
         }
 
         binding.btnContinue.setOnClickListener {
@@ -93,8 +103,8 @@ class HomeFragment : BaseFragment() {
 
                 })
             }
-
         })
+
         adapterCircle = AdapterCircle(listYear.size,selectPosition,requireActivity())
 
         binding.carouselRecyclerview.adapter = adapterCarrousel
@@ -104,12 +114,17 @@ class HomeFragment : BaseFragment() {
             setInfinite(false)
         }
 
+        binding.carouselRecyclerview.scrollToPosition(positionCarrousel)
         binding.carouselRecyclerview.setItemSelectListener(object : CarouselLayoutManager.OnSelected {
             override fun onItemSelected(position: Int) {
                 adapterCircle.updateSelect(position)
                 positionCarrousel = position
+                yearItem = gerYearItem()
+                getOrderListMonth()
             }
         })
+
+
         binding.circlesRecyclerview.adapter = adapterCircle
         binding.circlesRecyclerview.apply {
             set3DItem(false)
@@ -120,6 +135,14 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+    private fun recyclerViewMonth(){
+        adapterMonth = AdapterDataMonth(listMonth)
+
+        binding.dataRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        binding.dataRecyclerView.adapter = adapterMonth
+
+    }
+
     private fun getOrderListYear(){
         viewModel.fullByYears(requireActivity()).observe(requireActivity()) {responseBase ->
             if (responseBase != null) {
@@ -127,10 +150,10 @@ class HomeFragment : BaseFragment() {
                 binding.constrainEmpty.visibility = if (listYear.isNotEmpty()) View.GONE else View.VISIBLE
                 binding.mainConstra.visibility = if (listYear.isEmpty()) View.GONE else View.VISIBLE
                 recyclerViewCarousel()
+                getOrderListMonth()
             }
         }
     }
-
 
     /**
      * ADD NEW YEAR CONTROLLER
@@ -169,37 +192,20 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    /**
-     * ADD NEW Month CONTROLLER
-     */
-    private fun setAddMonth(){
-        viewModel.setAddMonthDataBase(requireActivity(), MonthEntity("febre",gerIdListYear()))
-        viewModel.getAddMonthDataBase().observe(requireActivity()) {responseBase ->
-            if (responseBase.status == SUCCESS){
-                dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
-                getOrderListMonth()
-            }else{
-                dialogMessageDefault(getStringRes(R.string.error),
-                    responseBase.message,
-                    1
-                )
-            }
-        }
-    }
 
     private fun getOrderListMonth(){
-        viewModel.fullByMonths(requireActivity(),gerIdListYear()).observe(requireActivity()) {responseBase ->
+        viewModel.fullByMonths(requireActivity(),gerYearItem().id.toString()).observe(requireActivity()) {responseBase ->
             if (responseBase != null) {
-                val gson = Gson()
-                println(gson.toJson(responseBase))
+                listMonth = responseBase
+                recyclerViewMonth()
             }
         }
     }
 
-    private fun gerIdListYear():String{
+    private fun gerYearItem():YearsEntity{
         if (positionCarrousel > -1 && positionCarrousel <= listYear.size){
-            return listYear[positionCarrousel].id.toString()
+            return listYear[positionCarrousel]
         }
-        return ""
+        return YearsEntity("")
     }
 }
