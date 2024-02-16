@@ -18,15 +18,17 @@ class MonthItemRepository (context: Context) : BaseRepository(context) {
     private var monthDao: MonthDao = controlDataBase.getMonthDao()
     private var yearDao: YearsDao = controlDataBase.getYearDao()
 
-    fun getByAllMonths() : MutableLiveData<List<MonthEntity>>{
-        val response:MutableLiveData<List<MonthEntity>> = MutableLiveData()
-        response.value = if (monthDao.getAllMonths() != null) monthDao.getAllMonths() else ArrayList()
-        return response
-    }
 
     fun getByAllMonthIdYear(idYear:String) : MutableLiveData<List<MonthEntity>> {
         val response: MutableLiveData<List<MonthEntity>> = MutableLiveData()
         response.value = monthDao.orderByIdYearMonth(idYear) ?: ArrayList()
+        response.value = orderMonth(response.value!!)
+        return response
+    }
+
+    fun getByMonthIdYear(idYear:String) : MutableLiveData<List<MonthEntity>> {
+        val response: MutableLiveData<List<MonthEntity>> = MutableLiveData()
+        response.value = monthDao.getByMonthIdYears(idYear) ?: ArrayList()
         response.value = orderMonth(response.value!!)
         return response
     }
@@ -50,8 +52,8 @@ class MonthItemRepository (context: Context) : BaseRepository(context) {
 
     fun getAddMonth(month:MonthEntity) :  MutableLiveData<ResponseBase>{
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
-        val monthName:MonthEntity = monthDao.orderByIdMonthAndYear(month.name.toString(),month.yearsEntity)
-        val yearId:YearsEntity = yearDao.orderByIdYear(month.yearsEntity)
+        val monthName:MonthEntity = monthDao.orderByIdMonthAndYear(month.name.toString(),month.idYear)
+        val yearId:YearsEntity = yearDao.orderByIdYear(month.idYear.toInt())
 
         response.value = if (monthName == null && yearId != null && !isEmptyItem(month.name.toString())) {
             monthDao.insertMonth(month)

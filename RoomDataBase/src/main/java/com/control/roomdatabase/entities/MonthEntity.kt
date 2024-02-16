@@ -8,12 +8,12 @@ import com.control.roomdatabase.utils.ConstantsNames.MONTH_TABLE
 @Entity(tableName = MONTH_TABLE, foreignKeys = [ForeignKey(
     entity = YearsEntity::class,
     parentColumns = arrayOf("id"),
-    childColumns = arrayOf("yearsEntity"),
+    childColumns = arrayOf("idYear"),
     onDelete = ForeignKey.CASCADE
 )])
 data class MonthEntity (
     @ColumnInfo(name = "name") var name: String?,
-    @ColumnInfo(index = true) val yearsEntity: String,
+    @ColumnInfo(name = "idYear") val idYear: String,
     @ColumnInfo(name = "total") var total: String = "",
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") var id: Int = 0
 )

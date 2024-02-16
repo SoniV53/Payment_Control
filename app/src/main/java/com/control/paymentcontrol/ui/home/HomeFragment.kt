@@ -19,6 +19,7 @@ import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.YEAR_SELECT
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
+import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
 import com.control.roomdatabase.repository.ui.YearItemRepository
 import com.control.roomdatabase.utils.Status.SUCCESS
@@ -91,6 +92,8 @@ class HomeFragment : BaseFragment() {
                 .show()
         }
 
+        //setAddSpent("3")
+        getOrderSpent()
         return binding.root
     }
 
@@ -204,12 +207,34 @@ class HomeFragment : BaseFragment() {
                 listMonthOriginal = responseBase
                 recyclerViewMonth()
             }
-
             binding.emptyMonth.visibility = if (listMonthOriginal.isEmpty()) View.VISIBLE else View.GONE
             binding.dataRecyclerView.visibility = if (listMonthOriginal.isEmpty()) View.GONE else View.VISIBLE
         }
+    }
 
+    /**
+     * ADD NEW Spent
+     */
+    private fun setAddSpent(id:String){
+        viewModel.setAddSpentDataBase(requireActivity(), SpentEntity("100",idMonth = id, description = "HOLA"))
+        viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
+            if (responseBase.status == SUCCESS){
+                getOrderSpent()
+            }else{
+                dialogMessageDefault(getStringRes(R.string.error),
+                    getStringRes(R.string.body_dialog_message_data),
+                    1
+                )
+            }
+        }
+    }
 
+    private fun getOrderSpent(){
+        viewModel.fullBySpent(requireActivity(),"3").observe(requireActivity()) {responseBase ->
+            if (responseBase != null) {
+                println("SPENT DATA: " + gson.toJson(responseBase))
+            }
+        }
     }
 
     private fun gerYearItem():YearsEntity{

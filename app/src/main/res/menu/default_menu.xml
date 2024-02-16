@@ -2,16 +2,9 @@
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/new_game"
-        android:icon="@drawable/baseline_add_black"
-        android:title="@string/accept"
-        android:contentDescription="@string/app_name"
-        tools:ignore="AppCompatResource" />
-
-    <item android:id="@+id/help"
-        android:icon="@drawable/poll_solid"
-        android:title="@string/accept"
+    <item android:id="@+id/addSpent"
+        android:icon="@drawable/comment_dollar_solid"
+        android:title="@string/menu_add_spent"
         tools:ignore="AppCompatResource"/>
 
     <item android:id="@+id/addYear"

@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.control.roomdatabase.entities.MonthEntity
+import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
+import com.control.roomdatabase.entities.embeddedWith.MonthWithSpent
 import com.control.roomdatabase.repository.models.ResponseBase
 import com.control.roomdatabase.repository.ui.MonthItemRepository
+import com.control.roomdatabase.repository.ui.SpentItemRepository
 import com.control.roomdatabase.repository.ui.YearItemRepository
 
 class ServicePaymentViewModel : ViewModel() {
@@ -17,6 +20,9 @@ class ServicePaymentViewModel : ViewModel() {
     private lateinit var addMonthDataBase: MutableLiveData<ResponseBase>
     private lateinit var deleteMonthDataBase: MutableLiveData<ResponseBase>
     private lateinit var getByAllMonths: MutableLiveData<List<MonthEntity>>
+
+    private lateinit var addSpentDataBase: MutableLiveData<ResponseBase>
+    private lateinit var getByAllSpent : MutableLiveData<List<MonthWithSpent>>
 
     /**
      * Services of Year
@@ -69,10 +75,9 @@ class ServicePaymentViewModel : ViewModel() {
     }
     fun fullByMonths(context: Context,idYear:String) : MutableLiveData<List<MonthEntity>>{
         val repository = MonthItemRepository(context)
-        getByAllMonths = repository.getByAllMonthIdYear(idYear)
+        getByAllMonths = repository.getByMonthIdYear(idYear)
         return getByAllMonths
     }
-
 
 
     fun getValidExistMonth(listMo:Array<String>,listMonth:List<MonthEntity>):Array<String>{
@@ -90,6 +95,24 @@ class ServicePaymentViewModel : ViewModel() {
                 return true
         }
         return false
+    }
+
+
+    /**
+     * Services of spent
+     */
+    fun setAddSpentDataBase(context: Context,spent: SpentEntity){
+        val repository = SpentItemRepository(context)
+        addSpentDataBase = repository.getAddSpent(spent)
+    }
+    fun getAddSpentDataBase() : MutableLiveData<ResponseBase>{
+        return addSpentDataBase
+    }
+
+    fun fullBySpent(context: Context,idMonth:String) : MutableLiveData<List<MonthWithSpent>>{
+        val repository = SpentItemRepository(context)
+        getByAllSpent = repository.getByAllSpentMonth(idMonth)
+        return getByAllSpent
     }
 }
 

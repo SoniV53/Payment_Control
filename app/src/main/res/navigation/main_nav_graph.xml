@@ -23,5 +23,14 @@
         android:id="@+id/addPaymentFragment"
         android:name="com.control.paymentcontrol.ui.payment.AddPaymentFragment"
         android:label="fragment_add_payment"
-        tools:layout="@layout/fragment_add_payment" />
+        tools:layout="@layout/fragment_add_payment" >
+        <action
+            android:id="@+id/action_addPaymentFragment_to_formularyPaymentFragment"
+            app:destination="@id/formularyPaymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/formularyPaymentFragment"
+        android:name="com.control.paymentcontrol.ui.payment.FormularyPaymentFragment"
+        android:label="fragment_formulary_payment"
+        tools:layout="@layout/fragment_formulary_payment" />
 </navigation>

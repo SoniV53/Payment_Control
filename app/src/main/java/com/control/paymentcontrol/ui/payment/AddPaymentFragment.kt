@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.databinding.FragmentAddPaymentBinding
 import com.control.paymentcontrol.ui.base.BaseFragment
@@ -23,6 +24,7 @@ import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.YearsEntity
 import com.control.roomdatabase.utils.Status
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.Arrays
 
 class AddPaymentFragment : BaseFragment() {
@@ -45,6 +47,14 @@ class AddPaymentFragment : BaseFragment() {
         binding.btnContinue.setOnClickListener {
             setAddMonth()
         }
+
+        onClickMoreNavbar(object:OnActionButtonNavBarMenu{
+            override fun onActionAddYear() {
+                val bundle = Bundle()
+                findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
+            }
+
+        })
 
         return binding.root
     }

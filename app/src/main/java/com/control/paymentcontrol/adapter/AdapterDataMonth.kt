@@ -61,14 +61,6 @@ class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context): R
 
                         true
                     }
-                    R.id.new_game -> {
-
-                        true
-                    }
-                    R.id.new_game -> {
-
-                        true
-                    }
                 }
 
                 false

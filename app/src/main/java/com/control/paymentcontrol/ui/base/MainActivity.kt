@@ -50,11 +50,7 @@ class MainActivity : AppCompatActivity() , InterfaceNavBar {
                        action.onActionAddYear()
                        true
                    }
-                R.id.new_game -> {
-                    Toast.makeText(this, "SIUUU", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.new_game -> {
+                R.id.addSpent -> {
                     Toast.makeText(this, "SIUUU", Toast.LENGTH_SHORT).show()
                     true
                 }
