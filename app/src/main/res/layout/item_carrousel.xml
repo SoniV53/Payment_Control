@@ -8,7 +8,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardMain"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="120dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
@@ -40,12 +40,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         app:cardBackgroundColor="@color/primary_color"
                         app:cardCornerRadius="8dp"
                         app:cardElevation="4dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -62,30 +62,6 @@
                             android:textSize="24sp" />
                     </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:id="@+id/txtSupTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:textColor="@color/primary_text"
-                        android:textSize="20sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/Cardtitle" />
-
-                    <TextView
-                        android:id="@+id/txtCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
-                        android:textColor="@color/primary_text"
-                        android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/txtSupTitle"
-                        app:layout_constraintStart_toStartOf="@+id/txtSupTitle"
-                        app:layout_constraintTop_toBottomOf="@+id/txtSupTitle" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,6 +76,7 @@
                         android:layout_marginEnd="8dp"
                         android:text="@string/delete"
                         android:textSize="10sp"
+                        android:visibility="gone"
                         app:backgroundTint="@color/error"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -108,12 +85,12 @@
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/imgRight"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_margin="8dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="24dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="24dp"
                         android:layout_weight="1"
                         app:cardCornerRadius="16dp"
                         app:layout_constraintBottom_toTopOf="@+id/btnDelete"
@@ -137,11 +114,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
             </LinearLayout>
-
-
-
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,15 +27,31 @@ class MonthItemRepository (context: Context) : BaseRepository(context) {
     fun getByAllMonthIdYear(idYear:String) : MutableLiveData<List<MonthEntity>> {
         val response: MutableLiveData<List<MonthEntity>> = MutableLiveData()
         response.value = monthDao.orderByIdYearMonth(idYear) ?: ArrayList()
+        response.value = orderMonth(response.value!!)
         return response
+    }
+
+    private fun orderMonth(monthList: List<MonthEntity>): List<MonthEntity> {
+        val newMonths = mutableListOf<MonthEntity>()
+        val orderMonth = listOf("Enero","Febrero","Marzo","Abril","Mayo","Junio",
+            "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre")
+
+        orderMonth.forEach { month ->
+            monthList.forEach { itemResponse ->
+                if (month == itemResponse.name) {
+                    newMonths.add(itemResponse)
+                }
+            }
+        }
+
+
+        return newMonths
     }
 
     fun getAddMonth(month:MonthEntity) :  MutableLiveData<ResponseBase>{
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
         val monthName:MonthEntity = monthDao.orderByIdMonthAndYear(month.name.toString(),month.yearsEntity)
         val yearId:YearsEntity = yearDao.orderByIdYear(month.yearsEntity)
-
-        println(monthName)
 
         response.value = if (monthName == null && yearId != null && !isEmptyItem(month.name.toString())) {
             monthDao.insertMonth(month)

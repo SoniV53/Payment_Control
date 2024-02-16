@@ -9,6 +9,7 @@
     <string name="error">Error</string>
     <string name="alert">Alerta</string>
     <string name="success">Con éxito</string>
+    <string name="add">Agregar</string>
     <string name="success_delete">Se eliminó con éxito</string>
 
     <string-array name="month">
@@ -37,6 +38,8 @@
     <string name="body_dialog_message_success">Se creo correctamente</string>
     <string name="empty_title">Ag</string>
     <string name="add_month">Agregar Mes</string>
+    <string name="message_empty_mov">Aun no hay movimientos</string>
+
 
 
 

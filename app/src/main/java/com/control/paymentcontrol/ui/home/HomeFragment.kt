@@ -43,6 +43,7 @@ class HomeFragment : BaseFragment() {
     private var positionCarrousel: Int = 0
     private lateinit var yearItem:YearsEntity
     private lateinit var listMonth: List<MonthEntity>
+    private lateinit var listMonthOriginal: List<MonthEntity>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,7 +137,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun recyclerViewMonth(){
-        adapterMonth = AdapterDataMonth(listMonth)
+        adapterMonth = AdapterDataMonth(listMonth,requireActivity())
 
         binding.dataRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
         binding.dataRecyclerView.adapter = adapterMonth
@@ -196,16 +197,26 @@ class HomeFragment : BaseFragment() {
     private fun getOrderListMonth(){
         viewModel.fullByMonths(requireActivity(),gerYearItem().id.toString()).observe(requireActivity()) {responseBase ->
             if (responseBase != null) {
-                listMonth = responseBase
+                val result = mutableListOf<MonthEntity>()
+                result.addAll(responseBase)
+                result.add(MonthEntity("",""))
+                listMonth = result
+                listMonthOriginal = responseBase
                 recyclerViewMonth()
             }
+
+            binding.emptyMonth.visibility = if (listMonthOriginal.isEmpty()) View.VISIBLE else View.GONE
+            binding.dataRecyclerView.visibility = if (listMonthOriginal.isEmpty()) View.GONE else View.VISIBLE
         }
+
+
     }
 
     private fun gerYearItem():YearsEntity{
-        if (positionCarrousel > -1 && positionCarrousel <= listYear.size){
+        if ( listYear != null && listYear.isNotEmpty() && positionCarrousel <= listYear.size){
             return listYear[positionCarrousel]
         }
         return YearsEntity("")
     }
+
 }

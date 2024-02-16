@@ -73,5 +73,23 @@ class ServicePaymentViewModel : ViewModel() {
         return getByAllMonths
     }
 
+
+
+    fun getValidExistMonth(listMo:Array<String>,listMonth:List<MonthEntity>):Array<String>{
+        val result = mutableListOf<String>()
+        listMo?.forEach { item->
+            if (!isValidExistMonth(item,listMonth)){
+                result.add(item)
+            }
+        }
+        return result.toTypedArray()
+    }
+    private fun isValidExistMonth(value:String,listMonth:List<MonthEntity>):Boolean{
+        listMonth?.forEach { item->
+            if (item.name?.lowercase().equals(value.lowercase()))
+                return true
+        }
+        return false
+    }
 }
 
