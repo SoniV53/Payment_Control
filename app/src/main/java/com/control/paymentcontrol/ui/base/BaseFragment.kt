@@ -1,8 +1,12 @@
 package com.control.paymentcontrol.ui.base
 
 import android.app.Notification.Action
+import android.content.Context
 import android.content.DialogInterface.OnClickListener
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
@@ -21,20 +25,26 @@ open class BaseFragment : Fragment() {
     private lateinit var interfaceNavBar: InterfaceNavBar
     protected var gson = Gson()
 
-    protected fun hiddenNavbar(){
+    protected fun showOrHiddenNavbar(boolean: Boolean){
         if (requireActivity() is InterfaceNavBar) {
             interfaceNavBar =  requireActivity() as InterfaceNavBar
-            interfaceNavBar.hiddenNavBar()
+            interfaceNavBar.showOrHiddenNavbar(boolean)
         }
     }
 
-    protected fun showNavbar(){
+    protected fun showOrHiddenMenuNavbar(boolean: Boolean){
         if (requireActivity() is InterfaceNavBar) {
             interfaceNavBar =  requireActivity() as InterfaceNavBar
-            interfaceNavBar.hiddenNavBar()
+            interfaceNavBar.showOrHiddenMenuNavbar(boolean)
         }
     }
-
+    protected fun hideKeyboard(view: View) {
+        if (view != null) {
+            val inputMethodManager =
+                requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0)
+        }
+    }
     protected fun onClickMoreNavbar(action: OnActionButtonNavBarMenu){
         if (requireActivity() is InterfaceNavBar) {
             interfaceNavBar =  requireActivity() as InterfaceNavBar

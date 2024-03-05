@@ -5,18 +5,23 @@
     <string name="title_navBar">Control de Gastos</string>
 
     <string name="accept">Aceptar</string>
+    <string name="update">Actualizar</string>
     <string name="delete">Eliminar</string>
     <string name="error">Error</string>
     <string name="alert">Alerta</string>
     <string name="success">Con éxito</string>
     <string name="add">Agregar</string>
+    <string name="edit">Editar</string>
     <string name="description">Descripción</string>
     <string name="required">* Obligatorio</string>
     <string name="amount">Monto</string>
-    <string name="commission">Comisión</string>
+    <string name="commission">Comisión "0.4"</string>
     <string name="paid">Pagado</string>
-    <string name="details">Detalle:</string>
+    <string name="details">Detalle Cuota Mensual:</string>
     <string name="success_delete">Se eliminó con éxito</string>
+    <string name="view_details">Ver Detalles</string>
+    <string name="title">Título</string>
+
 
     <string-array name="month">
         <item>Enero</item>
@@ -36,26 +41,36 @@
     <string-array name="type_spent">
         <item>Normal</item>
         <item>Cuotas</item>
-        <item>Cuotas, con valor total</item>
+        <!-- <item>Cuotas, con valor total</item>-->
     </string-array>
 
     <string name="menu_add_year">Agregar Año</string>
     <string name="menu_add_spent">Agregar Gasto</string>
 
-    <string name="number_quotas">Número de cuotas a pagar</string>
+    <string name="number_quotas">Número de cuotas</string>
     <string name="number_quotas_paid">Cuotas Pagadas</string>
+    <string name="credit_month">Pago total del mes:</string>
+    <string name="credit_month_total">Total Pagado</string>
+    <string name="debit_month">Monto Restante Pagado</string>
+    <string name="debit_month_total">Total del Monto Restante</string>
 
     <string name="select_year">Seleccione un Año</string>
+    <string name="select_month">Seleccione Mes.</string>
     <string name="title_dialog_success">Muy bien</string>
     <string name="body_dialog_message_data">Aún Faltan Datos por llenar</string>
     <string name="delete_message">¿Estás seguro de que quieres eliminar?</string>
 
 
     <string name="body_dialog_message_success">Se creo correctamente</string>
+    <string name="body_dialog_delete_message_success">Se Elimino correctamente</string>
     <string name="empty_title">Ag</string>
     <string name="add_month">Agregar Mes</string>
     <string name="add_type_spent">Agregar Tipo de Gasto</string>
     <string name="message_empty_mov">Aun no hay movimientos</string>
+    <string name="amount_account">Monto Mensual</string>
+
+    <string name="num_quotes">Número de Cuotas</string>
+    <string name="num_quotes_pay">Número de Cuotas Pagadas</string>
 
 
 </resources>

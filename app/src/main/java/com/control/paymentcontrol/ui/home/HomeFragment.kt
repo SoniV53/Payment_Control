@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -16,12 +18,14 @@ import com.control.paymentcontrol.databinding.FragmentHomeBinding
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
+import com.control.paymentcontrol.ui.utils.PutArgumentsString.MONTH_SELECT
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.YEAR_SELECT
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
 import com.control.roomdatabase.repository.ui.YearItemRepository
+import com.control.roomdatabase.utils.Status
 import com.control.roomdatabase.utils.Status.SUCCESS
 import com.example.awesomedialog.AwesomeDialog
 import com.example.awesomedialog.body
@@ -32,6 +36,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
 import java.util.Calendar
+import java.util.Objects
 
 class HomeFragment : BaseFragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -76,9 +81,7 @@ class HomeFragment : BaseFragment() {
         })
 
         binding.addAction.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString(YEAR_SELECT,gson.toJson( gerYearItem()))
-            findNavController().navigate(R.id.action_homeFragment_to_addPaymentFragment,bundle)
+            getOrderNewListMonth()
         }
 
         binding.btnContinue.setOnClickListener {
@@ -92,8 +95,6 @@ class HomeFragment : BaseFragment() {
                 .show()
         }
 
-        //setAddSpent("3")
-        getOrderSpent()
         return binding.root
     }
 
@@ -140,7 +141,30 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun recyclerViewMonth(){
-        adapterMonth = AdapterDataMonth(listMonth,requireActivity())
+        adapterMonth = AdapterDataMonth(listMonth,requireActivity(),object: AdapterDataMonth.OnClickButton{
+            override fun onClickDelete(item: MonthEntity) {
+                viewModel.setDeleteMonthDataBase(requireActivity(), item)
+                viewModel.getDeleteMonthDataBase().observe(requireActivity()) {responseBase ->
+                    if (responseBase.status == SUCCESS){
+                        getOrderListMonth()
+                        dialogMessageTitle(getStringRes(R.string.body_dialog_delete_message_success))
+                    }else{
+                        dialogMessageDefault(getStringRes(R.string.error),
+                            getStringRes(R.string.body_dialog_message_data),
+                            1
+                        )
+                    }
+                }
+            }
+
+            override fun onClickDetails(item: MonthEntity) {
+                val bundle = Bundle()
+                bundle.putString(YEAR_SELECT,gson.toJson( gerYearItem()))
+                bundle.putString(MONTH_SELECT,gson.toJson(item))
+                findNavController().navigate(R.id.action_homeFragment_to_addPaymentFragment,bundle)
+            }
+
+        })
 
         binding.dataRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
         binding.dataRecyclerView.adapter = adapterMonth
@@ -167,6 +191,12 @@ class HomeFragment : BaseFragment() {
         viewModel.getAddYearDataBase().observe(requireActivity()) {responseBase ->
             if (responseBase.status == SUCCESS){
                 getOrderListYear()
+                var listMonthInput = requireActivity().resources.getStringArray(R.array.month)
+                /*listMonthInput.forEach { name ->
+                    setAddMonth(name,responseBase.)
+                }*/
+                println("RESPONSE DATA: "+responseBase.message)
+
                 dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
             }else{
                 dialogMessageDefault(getStringRes(R.string.error),
@@ -212,30 +242,36 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+    private fun getOrderNewListMonth(){
+        var items = requireActivity().resources.getStringArray(R.array.month)
+        var list = viewModel.getValidExistMonth(items,listMonth)
+
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(resources.getString(R.string.select_month))
+            .setItems(list) { _, which ->
+                setAddMonth(list[which.inc() - 1],gerYearItem().id.toString())
+            }
+            .show()
+    }
+
     /**
-     * ADD NEW Spent
+     * ADD NEW Month CONTROLLER
      */
-    private fun setAddSpent(id:String){
-        viewModel.setAddSpentDataBase(requireActivity(), SpentEntity("100",idMonth = id, description = "HOLA"))
-        viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
+    private fun setAddMonth(nameMonth:String,idYear:String){
+        viewModel.setAddMonthDataBase(requireActivity(), MonthEntity(nameMonth,idYear))
+        viewModel.getAddMonthDataBase().observe(requireActivity()) {responseBase ->
             if (responseBase.status == SUCCESS){
-                getOrderSpent()
+                dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
+                getOrderListMonth()
             }else{
                 dialogMessageDefault(getStringRes(R.string.error),
-                    getStringRes(R.string.body_dialog_message_data),
+                    responseBase.message,
                     1
                 )
             }
         }
     }
 
-    private fun getOrderSpent(){
-        viewModel.fullBySpent(requireActivity(),"3").observe(requireActivity()) {responseBase ->
-            if (responseBase != null) {
-                println("SPENT DATA: " + gson.toJson(responseBase))
-            }
-        }
-    }
 
     private fun gerYearItem():YearsEntity{
         if ( listYear != null && listYear.isNotEmpty() && positionCarrousel <= listYear.size){

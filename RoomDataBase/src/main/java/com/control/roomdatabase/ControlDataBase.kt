@@ -9,7 +9,7 @@ import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
 
-@Database(entities = [YearsEntity::class,MonthEntity::class,SpentEntity::class], version = 2)
+@Database(entities = [YearsEntity::class,MonthEntity::class,SpentEntity::class], version = 3)
 abstract class ControlDataBase: RoomDatabase() {
     abstract fun getYearDao(): YearsDao
     abstract fun getMonthDao(): MonthDao

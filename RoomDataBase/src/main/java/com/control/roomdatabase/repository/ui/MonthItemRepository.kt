@@ -53,7 +53,7 @@ class MonthItemRepository (context: Context) : BaseRepository(context) {
     fun getAddMonth(month:MonthEntity) :  MutableLiveData<ResponseBase>{
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
         val monthName:MonthEntity = monthDao.orderByIdMonthAndYear(month.name.toString(),month.idYear)
-        val yearId:YearsEntity = yearDao.orderByIdYear(month.idYear.toInt())
+        val yearId:YearsEntity = yearDao.orderByIdYear(month.idYear)
 
         response.value = if (monthName == null && yearId != null && !isEmptyItem(month.name.toString())) {
             monthDao.insertMonth(month)
@@ -66,6 +66,13 @@ class MonthItemRepository (context: Context) : BaseRepository(context) {
             ResponseBase(ERROR, CODE_400,"El Año a agregar no existe")
         }
 
+        return response
+    }
+
+    fun getUpdateMonth(month:MonthEntity) :  MutableLiveData<ResponseBase>{
+        val response:MutableLiveData<ResponseBase> = MutableLiveData()
+        monthDao.updateMonth(month)
+        response.value = ResponseBase(SUCCESS, CODE_200)
         return response
     }
 

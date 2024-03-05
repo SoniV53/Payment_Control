@@ -11,6 +11,7 @@
     <color name="secondary_text">#757575</color>
     <color name="divider">#BDBDBD</color>
     <color name="font_card">#E5E7ED</color>
+    <color name="font_button">#D0D1D6</color>
     <color name="yellow">#FFC107</color>
     <color name="success">#51B61A</color>
     <color name="error">#9A1515</color>

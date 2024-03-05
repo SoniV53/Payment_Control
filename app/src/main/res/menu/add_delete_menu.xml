@@ -4,9 +4,9 @@
 
     <item
         android:id="@+id/new_item"
-        android:icon="@drawable/plus_circle_solid"
-        android:title="@string/add"
         android:contentDescription="@string/app_name"
+        android:icon="@drawable/plus_circle_solid"
+        android:title="@string/edit"
         tools:ignore="AppCompatResource" />
 
     <item android:id="@+id/delete"

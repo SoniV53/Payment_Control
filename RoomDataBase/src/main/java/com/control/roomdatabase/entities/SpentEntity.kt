@@ -13,6 +13,7 @@ data class SpentEntity (
     @ColumnInfo(name = "quotaPaid") var quotaPaid: String = "",
     @ColumnInfo(name = "commission") var commission: String = "",
     @ColumnInfo(name = "description") var description: String = "",
+    @ColumnInfo(name = "title") var title: String = "",
     @ColumnInfo(name = "cancelPay") var cancelPay: String = "",
     @ColumnInfo(name = "favorite") var favorite: Boolean = false,
     @ColumnInfo(name = "idMonth") var idMonth: String = "",

@@ -24,12 +24,12 @@ class MainActivity : AppCompatActivity() , InterfaceNavBar {
         setContentView(binding.root)
     }
 
-    override fun hiddenNavBar() {
-        binding.navBar.root.visibility = View.GONE
+    override fun showOrHiddenNavbar(boolean: Boolean) {
+        binding.navBar.root.visibility = if (boolean)View.VISIBLE else View.GONE
     }
 
-    override fun showNavbar() {
-        binding.navBar.root.visibility = View.VISIBLE
+    override fun showOrHiddenMenuNavbar(boolean: Boolean) {
+        binding.navBar.actionMenu.visibility = if (boolean)View.VISIBLE else View.GONE
     }
 
     override fun onClickMore(action: OnActionButtonNavBarMenu) {

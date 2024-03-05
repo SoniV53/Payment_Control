@@ -18,9 +18,11 @@ import com.control.paymentcontrol.R
 import com.control.paymentcontrol.databinding.ItemCarrouselBinding
 import com.control.paymentcontrol.databinding.ItemMonthBinding
 import com.control.paymentcontrol.models.years.CreateNewYear
+import com.control.paymentcontrol.ui.utils.FormatsMoney
 import com.control.roomdatabase.entities.MonthEntity
+import com.control.roomdatabase.entities.YearsEntity
 
-class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context): RecyclerView.Adapter<AdapterDataMonth.ViewHolder>(){
+class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context,var listener:OnClickButton): RecyclerView.Adapter<AdapterDataMonth.ViewHolder>(){
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,7 +31,7 @@ class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context): R
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(listYear[position],context )
+        holder.bind(listYear[position],context,listener)
     }
 
     override fun getItemCount(): Int {
@@ -37,28 +39,38 @@ class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context): R
     }
 
     class ViewHolder(val binding: ItemMonthBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item:MonthEntity,context: Context){
+        fun bind(item:MonthEntity,context: Context,listener:OnClickButton){
+            var format = FormatsMoney()
             binding.txtTitle.text = item.name
             binding.txtSupTitle.text = item.name
-            binding.txtCount.text = item.total
+            binding.txtCount.text =  format.formatCurrency(item.total)
+            binding.txtIdTitle.text = (layoutPosition + 1).toString()
 
             binding.frameMain.visibility = if (item.name?.isNotEmpty()!!) VISIBLE else GONE
             binding.contentDiv.visibility = if (item.name?.isNotEmpty()!!) GONE else VISIBLE
 
+            binding.cardMain.setOnClickListener{
+                listener.onClickDetails(item)
+            }
+
             binding.actionMenu.setOnClickListener {v ->
-                showMenu(v,context)
+                showMenu(v,context,listener,item)
             }
         }
 
         @SuppressLint("RestrictedApi", "ObsoleteSdkInt")
-        private fun showMenu(v: View,context: Context) {
+        private fun showMenu(v: View,context: Context,listener:OnClickButton,itemMonth:MonthEntity) {
             //val wrapper: Context = ContextThemeWrapper(this,R.style.popupMenuStyle)
             val showPopUp = PopupMenu(context,v)
             showPopUp.inflate(R.menu.add_delete_menu)
             showPopUp.setOnMenuItemClickListener {item ->
                 when(item.itemId){
-                    R.id.addYear -> {
-
+                    R.id.new_item -> {
+                        listener.onClickDetails(itemMonth)
+                        true
+                    }
+                    R.id.delete -> {
+                        listener.onClickDelete(itemMonth)
                         true
                     }
                 }
@@ -88,6 +100,11 @@ class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context): R
             }
             showPopUp.show()
         }
+    }
+
+    interface OnClickButton{
+        fun onClickDelete(item: MonthEntity)
+        fun onClickDetails(item: MonthEntity)
     }
 
     @SuppressLint("NotifyDataSetChanged")

@@ -22,7 +22,7 @@ class ServicePaymentViewModel : ViewModel() {
     private lateinit var getByAllMonths: MutableLiveData<List<MonthEntity>>
 
     private lateinit var addSpentDataBase: MutableLiveData<ResponseBase>
-    private lateinit var getByAllSpent : MutableLiveData<List<MonthWithSpent>>
+    private lateinit var getByAllSpent : MutableLiveData<MonthWithSpent>
 
     /**
      * Services of Year
@@ -61,6 +61,11 @@ class ServicePaymentViewModel : ViewModel() {
     fun setAddMonthDataBase(context: Context,month: MonthEntity){
         val repository = MonthItemRepository(context)
         addMonthDataBase = repository.getAddMonth(month)
+    }
+
+    fun setUpdateMonthDataBase(context: Context,month: MonthEntity){
+        val repository = MonthItemRepository(context)
+        addMonthDataBase = repository.getUpdateMonth(month)
     }
     fun getAddMonthDataBase() : MutableLiveData<ResponseBase>{
         return addMonthDataBase
@@ -105,11 +110,21 @@ class ServicePaymentViewModel : ViewModel() {
         val repository = SpentItemRepository(context)
         addSpentDataBase = repository.getAddSpent(spent)
     }
+
+    fun updateAddSpentStatus(context: Context,spent: SpentEntity){
+        val repository = SpentItemRepository(context)
+        addSpentDataBase = repository.updateAddSpentStatus(spent.id,spent.cancelPay)
+    }
+
+    fun deleteSpentStatus(context: Context,spent: SpentEntity){
+        val repository = SpentItemRepository(context)
+        addSpentDataBase = repository.getDeleteSpent(spent)
+    }
     fun getAddSpentDataBase() : MutableLiveData<ResponseBase>{
         return addSpentDataBase
     }
 
-    fun fullBySpent(context: Context,idMonth:String) : MutableLiveData<List<MonthWithSpent>>{
+    fun fullBySpent(context: Context,idMonth:String) : MutableLiveData<MonthWithSpent>{
         val repository = SpentItemRepository(context)
         getByAllSpent = repository.getByAllSpentMonth(idMonth)
         return getByAllSpent
