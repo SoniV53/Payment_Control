@@ -30,7 +30,10 @@ interface SpentDao {
     fun getSpentByTitleAndIdMonth(title:String,idMonth:String): SpentEntity
 
     @Query("SELECT * FROM ${ConstantsNames.SPENT_TABLE} WHERE idMonth LIKE :idMonth")
-    fun getAllSpent(idMonth:String): List<SpentEntity>
+    fun getAllSpentByIdMonth(idMonth:String): List<SpentEntity>
+
+    @Query("SELECT * FROM ${ConstantsNames.SPENT_TABLE}")
+    fun getAllSpent(): List<SpentEntity>
     @Transaction
     @Query("SELECT * FROM $MONTH_TABLE WHERE id LIKE :idMonth")
     fun getAllWithSpent(idMonth:String): MonthWithSpent

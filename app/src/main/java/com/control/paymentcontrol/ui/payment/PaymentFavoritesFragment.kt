@@ -73,8 +73,7 @@ class PaymentFavoritesFragment : BaseFragment() {
     private fun recyclerViewData(){
         adapterPay = AdapterDataPayment(spentList,requireActivity(),type,object: AdapterDataPayment.OnClickButton{
             override fun onClickDelete(item: SpentEntity) {
-                viewModel.deleteSpentStatus(requireActivity(),item)
-                viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
+                viewModel.deleteSpentStatus(requireActivity(),item).observe(requireActivity()) {responseBase ->
                     if (responseBase.status == Status.SUCCESS){
                         dialogMessageTitle(getStringRes(R.string.success_delete))
                         getOrderSpent()
@@ -125,6 +124,8 @@ class PaymentFavoritesFragment : BaseFragment() {
                 spentList = responseBase.toList()
                 recyclerViewData()
             }
+
+            binding.empty.visibility = if (spentList.size > 0) View.GONE else View.VISIBLE
         }
     }
 

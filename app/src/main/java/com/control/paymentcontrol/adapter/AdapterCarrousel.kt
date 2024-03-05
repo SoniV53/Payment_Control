@@ -24,7 +24,7 @@ class AdapterCarrousel (var listYear: List<YearsEntity>,var onActionClick:OnClic
     class ViewHolder(val binding: ItemCarrouselBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item:YearsEntity,onActionClick:OnClickButton){
             binding.txtTitle.text = item.name
-            binding.btnDelete.setOnClickListener {
+            binding.cardTitle.setOnClickListener {
                 onActionClick?.onClickDelete(item,layoutPosition)
             }
 

@@ -48,8 +48,6 @@ class SpentItemRepository (context: Context) : BaseRepository(context) {
             val spentByTitleFav:SpentEntity = spentDao.getSpentByTitleAndIdMonth(spentFav.title,"")
             val isValidFav = (spentByTitleFav != null)
 
-            println("DATA: " + Gson().toJson(spentByTitleFav))
-
             if (!isEmptyItem(spentFav.title) && !isValidFav)
                 spentDao.insertSpent(spentFav)
             else{
@@ -98,7 +96,8 @@ class SpentItemRepository (context: Context) : BaseRepository(context) {
 
     fun getByAllSpent() : MutableLiveData<List<SpentEntity>> {
         val response: MutableLiveData<List<SpentEntity>> = MutableLiveData()
-        response.value = spentDao.getAllSpent("")
+        response.value = spentDao.getAllSpentByIdMonth("")
+        //response.value = spentDao.getAllSpent()
         return response
     }
 
