@@ -42,9 +42,12 @@ class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context,var
         fun bind(item:MonthEntity,context: Context,listener:OnClickButton){
             var format = FormatsMoney()
             binding.txtTitle.text = item.name
-            binding.txtSupTitle.text = item.name
-            binding.txtCount.text =  format.formatCurrency(item.total)
+            binding.txtAmount.text =  format.formatCurrency(item.total)
+            binding.txtAmountQuote.text =  format.formatCurrency(item.payTotalMonth)
+            binding.txtAmountQuotePay.text =  format.formatCurrency(item.payAmount)
             binding.txtIdTitle.text = (layoutPosition + 1).toString()
+
+            binding.txtAmountQuotePay.setTextColor(if (item.payAmount.contains("-") ) context.getColor(R.color.error) else context.getColor(R.color.success))
 
             binding.frameMain.visibility = if (item.name?.isNotEmpty()!!) VISIBLE else GONE
             binding.contentDiv.visibility = if (item.name?.isNotEmpty()!!) GONE else VISIBLE

@@ -53,9 +53,9 @@
     <string name="number_quotas">Número de cuotas</string>
     <string name="number_quotas_paid">Cuotas Pagadas</string>
     <string name="credit_month">Pago total del mes:</string>
-    <string name="credit_month_total">Total Pagado</string>
-    <string name="debit_month">Monto Restante Pagado</string>
-    <string name="debit_month_total">Monto Restante</string>
+    <string name="credit_month_total">Total Pagado:</string>
+    <string name="debit_month">Monto Restante Pagado:</string>
+    <string name="debit_month_total">Monto Restante:</string>
 
     <string name="select_year">Seleccione un Año</string>
     <string name="select_month">Seleccione Mes.</string>

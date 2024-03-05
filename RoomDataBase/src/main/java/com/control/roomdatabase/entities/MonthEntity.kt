@@ -15,5 +15,7 @@ data class MonthEntity (
     @ColumnInfo(name = "name") var name: String?,
     @ColumnInfo(name = "idYear") val idYear: String,
     @ColumnInfo(name = "total") var total: String = "",
+    @ColumnInfo(name = "payTotalMonth") var payTotalMonth: String = "",
+    @ColumnInfo(name = "payAmount") var payAmount: String = "",
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") var id: Int = 0
 )

@@ -64,9 +64,9 @@ class ServicePaymentViewModel : ViewModel() {
         addMonthDataBase = repository.getAddMonth(month)
     }
 
-    fun setUpdateMonthDataBase(context: Context,month: MonthEntity){
+    fun setUpdateMonthDataBase(context: Context,month: MonthEntity):MutableLiveData<ResponseBase>{
         val repository = MonthItemRepository(context)
-        addMonthDataBase = repository.getUpdateMonth(month)
+        return repository.getUpdateMonth(month)
     }
     fun getAddMonthDataBase() : MutableLiveData<ResponseBase>{
         return addMonthDataBase
@@ -117,9 +117,9 @@ class ServicePaymentViewModel : ViewModel() {
         addSpentDataBase = repository.updateAddSpentStatus(spent.id,spent.cancelPay)
     }
 
-    fun deleteSpentStatus(context: Context,spent: SpentEntity){
+    fun deleteSpentStatus(context: Context,spent: SpentEntity): MutableLiveData<ResponseBase>{
         val repository = SpentItemRepository(context)
-        addSpentDataBase = repository.getDeleteSpent(spent)
+        return repository.getDeleteSpent(spent)
     }
     fun getAddSpentDataBase() : MutableLiveData<ResponseBase>{
         return addSpentDataBase

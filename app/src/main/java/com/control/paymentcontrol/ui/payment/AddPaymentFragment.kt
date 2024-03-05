@@ -43,6 +43,7 @@ class AddPaymentFragment : BaseFragment() {
     private var isDetails = false
     private var payMonthTotal = 0.00
     private var payMonth = 0.00
+    private var calcPayMonthTotal = 0.00
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
@@ -94,13 +95,20 @@ class AddPaymentFragment : BaseFragment() {
 
         binding.cpAmount.setOnEditorActionListener { v, i, event ->
             if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (i == EditorInfo.IME_ACTION_DONE)) {
-                setUpdateMonth()
+                binding.cpAmount.clearFocus()
             }
             false
         }
         binding.cpAmount.setOnFocusChangeListener{ v, hasFocus ->
             if (!hasFocus) {
-                setUpdateMonth()
+                if (binding.cpAmount.text.toString().isNotEmpty() && !totalMonth.equals(binding.cpAmount.text.toString())){
+                    calcDetails(true)
+                }else {
+                    if (binding.cpAmount.text.toString().isEmpty()){
+                        binding.cpAmount.setText(totalMonth)
+                        calcDetails()
+                    }
+                }
                 hideKeyboard(binding.root)
             }
         }
@@ -117,12 +125,10 @@ class AddPaymentFragment : BaseFragment() {
     private fun recyclerViewData(){
         adapterPay = AdapterDataPayment(spentList,requireActivity(),0,object:AdapterDataPayment.OnClickButton{
             override fun onClickDelete(item: SpentEntity) {
-                viewModel.deleteSpentStatus(requireActivity(),item)
-                viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
+                viewModel.deleteSpentStatus(requireActivity(),item).observe(requireActivity()) {responseBase ->
                     if (responseBase.status == Status.SUCCESS){
                         dialogMessageTitle(getStringRes(R.string.success_delete))
                         getOrderSpent()
-                        calcDetails()
                     }else{
                         dialogMessageDefault(getStringRes(R.string.error),
                             getStringRes(R.string.body_dialog_message_data),
@@ -157,30 +163,23 @@ class AddPaymentFragment : BaseFragment() {
     /**
      * Update Month CONTROLLER
      */
-    private fun setUpdateMonth(){
-        if (binding.cpAmount.text.toString().isNotEmpty() && (!totalMonth.equals(binding.cpAmount.text.toString()) || totalMonth.isEmpty())){
-            val updateMonth = monthItem
-            updateMonth.total = binding.cpAmount.text.toString()
-            viewModel.setUpdateMonthDataBase(requireActivity(), updateMonth)
-            viewModel.getAddMonthDataBase().observe(requireActivity()) {responseBase ->
-                if (responseBase.status == Status.SUCCESS){
-                    dialogMessageTitle("Se Actualizo Monto")
-                    totalMonth = binding.cpAmount.text.toString()
-                    calcDetails()
-                }else{
-                    dialogMessageDefault(getStringRes(R.string.error),
-                        responseBase.message,
-                        1
-                    )
-                }
-            }
-        }else {
-            if (binding.cpAmount.text.toString().isEmpty()){
-                binding.cpAmount.setText(totalMonth)
-                calcDetails()
+    private fun setUpdateMonth(isMessage:Boolean = false){
+        val updateMonth = monthItem
+        updateMonth.total = binding.cpAmount.text.toString()
+        updateMonth.payTotalMonth = payMonthTotal.toString()
+        updateMonth.payAmount =  calcPayMonthTotal.toString()
+        viewModel.setUpdateMonthDataBase(requireActivity(), updateMonth).observe(requireActivity()) {responseBase ->
+            if (responseBase.status == Status.SUCCESS){
+                totalMonth = binding.cpAmount.text.toString()
+                if (isMessage)
+                    dialogMessageTitle("SE ACTUALIZO")
+            }else{
+                dialogMessageDefault(getStringRes(R.string.error),
+                    responseBase.message,
+                    1
+                )
             }
         }
-
     }
     /**
      * Servicio que trae los gastos
@@ -200,9 +199,11 @@ class AddPaymentFragment : BaseFragment() {
         }
     }
 
-    private fun calcDetails(){
-        payMonthTotal = 0.0;
-        payMonth = 0.0;
+    private fun calcDetails(isMessage:Boolean = false){
+        payMonthTotal = 0.0
+        payMonth = 0.0
+        calcPayMonthTotal = 0.0
+        totalMonth = binding.cpAmount.text.toString()
         if (spentList.size > 0){
             spentList.forEach{item ->
                 payMonthTotal += item.amount.toDouble()
@@ -215,14 +216,16 @@ class AddPaymentFragment : BaseFragment() {
 
             if (totalMonth.isNotEmpty()){
                 val calcPayMonth = (totalMonth.toDouble() - payMonth)
-                val calcPayMonthTotal = (totalMonth.toDouble() - payMonthTotal)
+                calcPayMonthTotal = (totalMonth.toDouble() - payMonthTotal)
                 binding.txtAmountRest.text = format.formatCurrency(calcPayMonth.toString())
                 binding.txtAmountRestTotal.text = format.formatCurrency(calcPayMonthTotal.toString())
 
                 binding.txtAmountRest.setTextColor(  if (calcPayMonth > 0 ) requireActivity().getColor(R.color.primary_text) else requireActivity().getColor(R.color.error))
                 binding.txtAmountRestTotal.setTextColor(  if (calcPayMonthTotal > 0 ) requireActivity().getColor(R.color.primary_text) else requireActivity().getColor(R.color.error))
+
             }
         }
+        setUpdateMonth(isMessage)
     }
 
     private fun moreDetails() {
@@ -238,5 +241,9 @@ class AddPaymentFragment : BaseFragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        setUpdateMonth()
+    }
 
 }
