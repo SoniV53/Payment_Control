@@ -79,10 +79,7 @@ class PaymentFavoritesFragment : BaseFragment() {
                         dialogMessageTitle(getStringRes(R.string.success_delete))
                         getOrderSpent()
                     }else{
-                        dialogMessageDefault(getStringRes(R.string.error),
-                            getStringRes(R.string.body_dialog_message_data),
-                            1
-                        )
+                        dialogMessageDefault(getStringRes(R.string.error),responseBase.message,1)
                     }
                 }
             }
@@ -99,10 +96,7 @@ class PaymentFavoritesFragment : BaseFragment() {
                             dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
                             requireActivity().onBackPressed()
                         }else{
-                            dialogMessageDefault(getStringRes(R.string.error),
-                                getStringRes(R.string.body_dialog_message_data),
-                                1
-                            )
+                            dialogMessageDefault(getStringRes(R.string.error),responseBase.message,1)
                         }
                     }
                 }else{

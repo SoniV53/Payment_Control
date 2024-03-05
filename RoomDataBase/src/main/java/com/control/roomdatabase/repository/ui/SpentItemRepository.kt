@@ -10,23 +10,58 @@ import com.control.roomdatabase.entities.embeddedWith.MonthWithSpent
 import com.control.roomdatabase.repository.base.BaseRepository
 import com.control.roomdatabase.repository.models.ResponseBase
 import com.control.roomdatabase.utils.Status.CODE_200
+import com.control.roomdatabase.utils.Status.CODE_201
 import com.control.roomdatabase.utils.Status.CODE_400
 import com.control.roomdatabase.utils.Status.ERROR
 import com.control.roomdatabase.utils.Status.SUCCESS
+import com.google.gson.Gson
 
 class SpentItemRepository (context: Context) : BaseRepository(context) {
     private var spentDao: SpentDao = controlDataBase.getSpentDao()
-    fun getAddSpent(spent:SpentEntity) :  MutableLiveData<ResponseBase>{
+    fun getAddSpent(spent:SpentEntity,isFav:Boolean = false) :  MutableLiveData<ResponseBase>{
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
+        val spentByTitle:SpentEntity = spentDao.getSpentByTitleAndIdMonth(spent.title,spent.idMonth)
+        val isValid = (spentByTitle != null && spent.idMonth.equals(spentByTitle.idMonth))
 
-        response.value = if (!isEmptyItem(spent.title)) {
-            spentDao.insertSpent(spent)
+        response.value = if (!isEmptyItem(spent.title) && !isValid) {
+            getSpentFun(spent,isFav,false)
             ResponseBase(SUCCESS, CODE_200)
+        }else if (isValid){
+            getSpentFun(spent,isFav,true)
+            ResponseBase(SUCCESS, CODE_201,"Se Actualizo Correctamente")
         }else {
             ResponseBase(ERROR, CODE_400,"Error al crear, revise sus datos")
         }
 
         return response
+    }
+
+    private fun getSpentFun(spent:SpentEntity,isFav:Boolean,isUpdate:Boolean){
+        if (isFav){
+            if (isUpdate)spentDao.updateSpent(spent)
+            else spentDao.insertSpent(spent)
+
+            val spentFav:SpentEntity = spent
+            spentFav.id = 0
+            spentFav.idMonth = ""
+            spentFav.cancelPay = "0"
+            val spentByTitleFav:SpentEntity = spentDao.getSpentByTitleAndIdMonth(spentFav.title,"")
+            val isValidFav = (spentByTitleFav != null)
+
+            println("DATA: " + Gson().toJson(spentByTitleFav))
+
+            if (!isEmptyItem(spentFav.title) && !isValidFav)
+                spentDao.insertSpent(spentFav)
+            else{
+                val spentFavUpd:SpentEntity = spent
+                spentFavUpd.id = spentByTitleFav.id
+                spentDao.updateSpent(spentFavUpd)
+            }
+
+        }else{
+            if (isUpdate)spentDao.updateSpent(spent)
+            else spentDao.insertSpent(spent)
+        }
     }
 
     fun getDeleteSpent(spent:SpentEntity) :  MutableLiveData<ResponseBase>{
@@ -40,19 +75,6 @@ class SpentItemRepository (context: Context) : BaseRepository(context) {
 
         return response
     }
-    fun updateAddSpent(spent:SpentEntity) :  MutableLiveData<ResponseBase>{
-        val response:MutableLiveData<ResponseBase> = MutableLiveData()
-
-        response.value = if (!isEmptyItem(spent.title)) {
-            spentDao.updateSpent(spent)
-            ResponseBase(SUCCESS, CODE_200)
-        }else {
-            ResponseBase(ERROR, CODE_400,"Error al crear, revise sus datos")
-        }
-
-        return response
-    }
-
     fun updateAddSpentStatus(id:Int,cancel:String) :  MutableLiveData<ResponseBase>{
         val sp = spentDao.getSpentData(id)
         sp.cancelPay = cancel

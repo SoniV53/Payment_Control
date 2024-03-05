@@ -130,8 +130,7 @@ class AddPaymentFragment : BaseFragment() {
                         dialogMessageTitle(getStringRes(R.string.success_delete))
                         getOrderSpent()
                     }else{
-                        dialogMessageDefault(getStringRes(R.string.error),
-                            getStringRes(R.string.body_dialog_message_data),
+                        dialogMessageDefault(getStringRes(R.string.error),responseBase.message,
                             1
                         )
                     }

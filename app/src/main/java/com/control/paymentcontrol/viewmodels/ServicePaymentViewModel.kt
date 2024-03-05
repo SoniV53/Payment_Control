@@ -107,9 +107,9 @@ class ServicePaymentViewModel : ViewModel() {
     /**
      * Services of spent
      */
-    fun setAddSpentDataBase(context: Context,spent: SpentEntity){
+    fun setAddSpentDataBase(context: Context,spent: SpentEntity,isFav:Boolean = false){
         val repository = SpentItemRepository(context)
-        addSpentDataBase = repository.getAddSpent(spent)
+        addSpentDataBase = repository.getAddSpent(spent,isFav)
     }
 
     fun updateAddSpentStatus(context: Context,spent: SpentEntity){

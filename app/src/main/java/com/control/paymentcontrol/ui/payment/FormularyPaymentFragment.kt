@@ -100,6 +100,7 @@ class FormularyPaymentFragment : BaseFragment() {
 
         }
         binding.chCencel.visibility = if(type == 0) View.GONE else View.VISIBLE
+        binding.swiFav.visibility = if(type == 0) View.GONE else View.VISIBLE
 
         textWatcher(binding.tiAmount)
         textWatcher(binding.tiNumberQuotes)
@@ -148,16 +149,17 @@ class FormularyPaymentFragment : BaseFragment() {
         if (isEdit)
             spentData.id = spentItem.id
 
-        viewModel.setAddSpentDataBase(requireActivity(), spentData)
+        viewModel.setAddSpentDataBase(requireActivity(), spentData,binding.swiFav.isChecked)
         viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
-            if (responseBase.status == Status.SUCCESS){
+            if (responseBase.status == Status.SUCCESS && responseBase.code == Status.CODE_200){
                 dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
                 requireActivity().onBackPressed()
-            }else{
-                dialogMessageDefault(getStringRes(R.string.error),
-                    getStringRes(R.string.body_dialog_message_data),
-                    1
-                )
+            }else if(responseBase.status == Status.SUCCESS && responseBase.code == Status.CODE_201){
+                dialogMessageDefault(getStringRes(R.string.success),responseBase.message,0)
+                requireActivity().onBackPressed()
+            }
+            else{
+                dialogMessageDefault(getStringRes(R.string.error),responseBase.message,1)
             }
         }
     }
