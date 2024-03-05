@@ -52,8 +52,8 @@ class PaymentFavoritesFragment : BaseFragment() {
         onClickMoreNavbar(object: OnActionButtonNavBarMenu {
             override fun onActionPositionOne() {
                 val bundle = Bundle()
-                bundle.putString(PutArgumentsString.MONTH_SELECT,gson.toJson(null))
                 bundle.putInt(PutArgumentsString.TYPE_ENT,0)
+                bundle.putBoolean(PutArgumentsString.TYPE_EDIT,false)
                 findNavController().navigate(R.id.action_paymentFavoritesFragment_to_formularyPaymentFragment,bundle)
             }
             override var attr: List<AttributesDesign>
@@ -105,6 +105,12 @@ class PaymentFavoritesFragment : BaseFragment() {
                             )
                         }
                     }
+                }else{
+                    val bundle = Bundle()
+                    bundle.putString(PutArgumentsString.PAYMENT_SELECT,gson.toJson(item))
+                    bundle.putInt(PutArgumentsString.TYPE_ENT,0)
+                    bundle.putBoolean(PutArgumentsString.TYPE_EDIT,true)
+                    findNavController().navigate(R.id.action_paymentFavoritesFragment_to_formularyPaymentFragment,bundle)
                 }
 
             }

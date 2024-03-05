@@ -46,6 +46,7 @@
 
     <string name="menu_add_year">Agregar Año</string>
     <string name="menu_add_spent">Agregar Gasto</string>
+    <string name="menu_update_spent">Actualizar Gasto</string>
     <string name="favorites">Favoritos</string>
     <string name="favorites_add">Agregar de Favoritos</string>
 

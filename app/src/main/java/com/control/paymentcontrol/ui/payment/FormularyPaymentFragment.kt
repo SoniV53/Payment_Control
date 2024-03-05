@@ -28,14 +28,18 @@ class FormularyPaymentFragment : BaseFragment() {
     private lateinit var binding: FragmentFormularyPaymentBinding
     private lateinit var viewModel: ServicePaymentViewModel
     private lateinit var monthItem: MonthEntity
+    private lateinit var spentItem: SpentEntity
     private var position = -1;
     private var type = 0
+    private var isEdit = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
 
         type = arguments?.getInt(PutArgumentsString.TYPE_ENT)!!
+        isEdit = arguments?.getBoolean(PutArgumentsString.TYPE_EDIT)!!
         monthItem = gson.fromJson(arguments?.getString(PutArgumentsString.MONTH_SELECT),MonthEntity::class.java).takeIf { it != null } ?: MonthEntity("","")
+        spentItem = gson.fromJson(arguments?.getString(PutArgumentsString.PAYMENT_SELECT),SpentEntity::class.java).takeIf { it != null } ?: SpentEntity("")
     }
 
     override fun onCreateView(
@@ -45,9 +49,11 @@ class FormularyPaymentFragment : BaseFragment() {
         binding = FragmentFormularyPaymentBinding.inflate(inflater, container, false)
         showOrHiddenMenuNavbar(false)
 
+
         var listMonthInput = requireActivity().resources.getStringArray(R.array.type_spent)
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, listMonthInput)
-        (binding.menuType.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        val autoText = (binding.menuType.editText as? AutoCompleteTextView);
+        autoText?.setAdapter(adapter)
 
         binding.cbCom.setOnItemClickListener { p,v,position,id ->
             when(position){
@@ -55,7 +61,28 @@ class FormularyPaymentFragment : BaseFragment() {
                 1 -> visibleQuote(true,pos = position)
                 2 -> visibleQuote(true,true,pos = position)
             }
+            clearText()
         }
+
+        if (isEdit){
+            binding.txtTitle.setText(getStringRes(R.string.menu_update_spent))
+            binding.tiTitle.setText(spentItem.title)
+            binding.tiDescription.setText(spentItem.description)
+            binding.tiAmount.setText(spentItem.amount)
+            binding.tiNumberQuotes.setText(spentItem.numberQuota)
+            binding.tiQuotesPay.setText(spentItem.quotaPaid)
+
+            binding.chCencel.isChecked = spentItem.cancelPay.equals("1")
+
+            position = if (spentItem.numberQuota.isNotEmpty()) 1 else 0
+            autoText?.setText(autoText?.getAdapter()?.getItem(position).toString(), false)
+            when(position){
+                0 -> visibleQuote(pos = position)
+                1 -> visibleQuote(true,pos = position)
+                2 -> visibleQuote(true,true,pos = position)
+            }
+        }
+
 
         binding.btnContinue.setOnClickListener{
            if (position == 0){
@@ -72,14 +99,13 @@ class FormularyPaymentFragment : BaseFragment() {
            }
 
         }
-
         binding.chCencel.visibility = if(type == 0) View.GONE else View.VISIBLE
 
         textWatcher(binding.tiAmount)
         textWatcher(binding.tiNumberQuotes)
         textWatcher(binding.tiComission)
         textWatcher(binding.tiTitle)
-
+        disableButton()
         return binding.root
     }
 
@@ -90,8 +116,13 @@ class FormularyPaymentFragment : BaseFragment() {
         binding.constDetails.visibility = if (!details) View.GONE else View.VISIBLE
         binding.mainContra.visibility = View.VISIBLE
         position = pos
+        disableButton()
     }
 
+    private fun clearText(){
+        binding.tiNumberQuotes.setText("")
+        binding.tiQuotesPay.setText("")
+    }
 
     private fun textWatcher(edit:EditText){
         edit.addTextChangedListener {
@@ -102,7 +133,7 @@ class FormularyPaymentFragment : BaseFragment() {
      * ADD NEW Spent
      */
     private fun setAddSpent(){
-        viewModel.setAddSpentDataBase(requireActivity(), SpentEntity(
+        var spentData = SpentEntity(
             binding.tiAmount.text.toString(),
             binding.txtDetails.text.toString(),
             binding.tiNumberQuotes.text.toString(),
@@ -111,8 +142,13 @@ class FormularyPaymentFragment : BaseFragment() {
             binding.tiDescription.text.toString(),
             binding.tiTitle.text.toString(),
             if (binding.chCencel.isChecked && type != 0)"1" else "0",
-            idMonth = if (type != 0) monthItem.id.toString() else ""
-        ))
+            idMonth = if (type != 0) monthItem.id.toString() else "",
+        )
+
+        if (isEdit)
+            spentData.id = spentItem.id
+
+        viewModel.setAddSpentDataBase(requireActivity(), spentData)
         viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
             if (responseBase.status == Status.SUCCESS){
                 dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))

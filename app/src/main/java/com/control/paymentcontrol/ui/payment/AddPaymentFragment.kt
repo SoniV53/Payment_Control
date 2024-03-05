@@ -21,6 +21,8 @@ import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.ID_MONTH
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.MONTH_SELECT
+import com.control.paymentcontrol.ui.utils.PutArgumentsString.PAYMENT_SELECT
+import com.control.paymentcontrol.ui.utils.PutArgumentsString.TYPE_EDIT
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.TYPE_ENT
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.YEAR_SELECT
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
@@ -52,7 +54,7 @@ class AddPaymentFragment : BaseFragment() {
         yearItem = gson.fromJson(arguments?.getString(YEAR_SELECT),YearsEntity::class.java)
         monthItem = gson.fromJson(arguments?.getString(MONTH_SELECT),MonthEntity::class.java)
 
-        binding.txtTitle.text = yearItem.name + " / " + monthItem.name
+        binding.txtTitle.text = "AÑO " + yearItem.name + " / MES " + monthItem.name
         binding.cpAmount.setText(monthItem.total)
         if (monthItem.total.isNotEmpty())
             totalMonth = binding.cpAmount.text.toString()
@@ -71,6 +73,7 @@ class AddPaymentFragment : BaseFragment() {
                 val bundle = Bundle()
                 bundle.putInt(TYPE_ENT,1)
                 bundle.putString(ID_MONTH,monthItem.id.toString())
+                bundle.putBoolean(TYPE_EDIT,false)
                 findNavController().navigate(R.id.action_addPaymentFragment_to_paymentFavoritesFragment,bundle)
             }
 
@@ -92,7 +95,6 @@ class AddPaymentFragment : BaseFragment() {
         binding.cpAmount.setOnEditorActionListener { v, i, event ->
             if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (i == EditorInfo.IME_ACTION_DONE)) {
                 setUpdateMonth()
-
             }
             false
         }
@@ -130,8 +132,14 @@ class AddPaymentFragment : BaseFragment() {
                 }
             }
 
-            override fun onClickDetails(item: SpentEntity) {
-
+            override fun onClickDetails(item:SpentEntity) {
+                isDetails = false
+                val bundle = Bundle()
+                bundle.putString(MONTH_SELECT,gson.toJson(monthItem))
+                bundle.putString(PAYMENT_SELECT,gson.toJson(item))
+                bundle.putInt(TYPE_ENT,1)
+                bundle.putBoolean(TYPE_EDIT,true)
+                findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
             }
 
             override fun onEdit(item: SpentEntity, check: Boolean) {
