@@ -2,12 +2,12 @@
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/addSpent"
+    <item android:id="@+id/addItemOne"
         android:icon="@drawable/comment_dollar_solid"
         android:title="@string/menu_add_spent"
         tools:ignore="AppCompatResource"/>
 
-    <item android:id="@+id/addYear"
+    <item android:id="@+id/addItemTwo"
         android:icon="@drawable/plus_circle_solid"
         android:title="@string/menu_add_year"
         tools:ignore="AppCompatResource"/>

@@ -15,9 +15,11 @@ import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
 import com.control.paymentcontrol.adapter.AdapterDataMonth
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
+import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
+import com.control.paymentcontrol.ui.utils.PutArgumentsString
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.MONTH_SELECT
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.YEAR_SELECT
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
@@ -35,6 +37,7 @@ import com.example.awesomedialog.title
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
+import java.util.Arrays
 import java.util.Calendar
 import java.util.Objects
 
@@ -67,7 +70,7 @@ class HomeFragment : BaseFragment() {
 
 
         onClickMoreNavbar(object:OnActionButtonNavBarMenu{
-            override fun onActionAddYear() {
+            override fun onActionPositionTwo() {
                 val items = viewModel.getYearList(requireActivity())
 
                 MaterialAlertDialogBuilder(requireActivity())
@@ -78,6 +81,16 @@ class HomeFragment : BaseFragment() {
                     .show()
             }
 
+            override fun onActionPositionOne() {
+                val bundle = Bundle()
+                bundle.putString(PutArgumentsString.ID_MONTH,"")
+                findNavController().navigate(R.id.action_homeFragment_to_paymentFavoritesFragment,bundle)
+            }
+
+            override var attr: List<AttributesDesign>
+                get() = Arrays.asList(AttributesDesign(1,getStringRes(R.string.favorites),R.drawable.star_solid),
+                    AttributesDesign(2,getStringRes(R.string.menu_add_year),R.drawable.plus_circle_solid))
+                set(value) {}
         })
 
         binding.addAction.setOnClickListener {

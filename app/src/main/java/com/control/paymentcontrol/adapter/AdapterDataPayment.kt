@@ -25,14 +25,22 @@ import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
 import com.control.roomdatabase.entities.embeddedWith.MonthWithSpent
 
-class AdapterDataPayment (var list: List<SpentEntity>, var context: Context,var listener:OnClickButton ): RecyclerView.Adapter<AdapterDataPayment.ViewHolder>(){
+class AdapterDataPayment (var list: List<SpentEntity>,
+                          var context: Context,
+                          var type:Int,
+                          var listener:OnClickButton,
+                          var isCancel:Boolean = true, ): RecyclerView.Adapter<AdapterDataPayment.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemPaymentListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(list[position],context,listener)
+        when(type){
+            0 -> holder.bind(list[position],context,listener, isCancel)
+            1 -> holder.bindFav(list[position],context,listener)
+        }
+
     }
 
     override fun getItemCount(): Int {
@@ -40,34 +48,14 @@ class AdapterDataPayment (var list: List<SpentEntity>, var context: Context,var 
     }
 
     class ViewHolder(val binding: ItemPaymentListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item:SpentEntity,context: Context,listener:OnClickButton){
-            var format = FormatsMoney()
-
-            binding.tbrQuotes.visibility = GONE
-            binding.tbrQuotesPay.visibility = GONE
-
-            binding.txtDes.text = item.description
-            binding.txtAmount.text = format.formatCurrency(item.amount)
-            binding.txtTitle.text = item.title.uppercase()
-
-            if (item.numberQuota.isNotEmpty()){
-                binding.tbrQuotes.visibility = VISIBLE
-                binding.tbrQuotesPay.visibility = VISIBLE
-                binding.txtNumQuotes.text = item.numberQuota
-                binding.txtAmountQuote.text = format.formatCurrency(calcQuotes(item.amount,item.numberQuota))
-
-                binding.txtNumQuotesPay.text = if (item.quotaPaid.isNotEmpty())item.quotaPaid else "0"
-                binding.txtAmountQuotePay.text = format.formatCurrency(calcQuotes(item.amount,item.quotaPaid))
-            }
-
-            binding.chCancel.isChecked = item.cancelPay.equals("1")
-
-            binding.dividerStatus.setBackgroundColor(if (item.cancelPay.equals("1")) context.getColor(R.color.accent) else context.getColor(R.color.error))
-
-            binding.chCancel.setOnCheckedChangeListener{bu,che ->
-                item.cancelPay =  if (binding.chCancel.isChecked )"1" else "0"
-                binding.dividerStatus.setBackgroundColor(if (item.cancelPay.equals("1")) context.getColor(R.color.accent) else context.getColor(R.color.error))
-                listener.onEdit(item,che)
+        fun bind(item:SpentEntity,context: Context,listener:OnClickButton,isCancel:Boolean){
+            printInf(item)
+            if (isCancel){
+                binding.chCancel.visibility =  VISIBLE
+                onActionChecked(item,context,listener)
+            }else {
+                binding.chCancel.visibility = GONE
+                binding.dividerStatus.setBackgroundColor(context.getColor(R.color.dark_primary))
             }
 
             binding.btnEliminar.setOnClickListener{
@@ -78,12 +66,51 @@ class AdapterDataPayment (var list: List<SpentEntity>, var context: Context,var 
                 listener.onClickDetails(item)
             }
 
+        }
+        fun bindFav(item:SpentEntity,context: Context,listener:OnClickButton){
+            printInf(item)
+            binding.chCancel.visibility = GONE
+            binding.btnEliminar.visibility = GONE
+            binding.btnEditar.visibility = GONE
+
+            binding.dividerStatus.setBackgroundColor(context.getColor(R.color.dark_primary))
+
+            binding.mainConstra.setOnClickListener{
+                listener.onClickDetails(item)
+            }
+        }
+        private fun printInf(item:SpentEntity){
+            var format = FormatsMoney()
+            binding.tbrQuotes.visibility = GONE
+            binding.tbrQuotesPay.visibility = GONE
+
+            binding.txtDes.text = item.description.takeIf { it.isNotEmpty() } ?: item.title
+            binding.txtAmount.text = format.formatCurrency(item.amount)
+            binding.txtTitle.text = item.title.uppercase() + " "
+
+            if (item.numberQuota.isNotEmpty()){
+                binding.tbrQuotes.visibility = VISIBLE
+                binding.tbrQuotesPay.visibility = VISIBLE
+                binding.txtNumQuotes.text = item.numberQuota
+                binding.txtAmountQuote.text = format.formatCurrency(calcQuotes(item.amount,item.numberQuota))
+
+                binding.txtNumQuotesPay.text = if (item.quotaPaid.isNotEmpty())item.quotaPaid else "0"
+                binding.txtAmountQuotePay.text = format.formatCurrency(calcQuotes(item.amount,item.quotaPaid))
+            }
+        }
+
+        private fun onActionChecked(item:SpentEntity,context: Context,listener:OnClickButton){
+            binding.chCancel.isChecked = item.cancelPay.equals("1")
+            binding.dividerStatus.setBackgroundColor(if (item.cancelPay.equals("1")) context.getColor(R.color.accent) else context.getColor(R.color.error))
+            binding.chCancel.setOnCheckedChangeListener{bu,che ->
+                item.cancelPay =  if (binding.chCancel.isChecked )"1" else "0"
+                binding.dividerStatus.setBackgroundColor(if (item.cancelPay.equals("1")) context.getColor(R.color.accent) else context.getColor(R.color.error))
+                listener.onEdit(item,che)
+            }
             binding.mainConstra.setOnClickListener{
                 val check = binding.chCancel.isChecked
                 binding.chCancel.isChecked = !check
-
                 binding.dividerStatus.setBackgroundColor(if (item.cancelPay.equals("1")) context.getColor(R.color.accent) else context.getColor(R.color.error))
-
             }
         }
         private fun calcQuotes(value:String,quote:String):String{
@@ -96,9 +123,9 @@ class AdapterDataPayment (var list: List<SpentEntity>, var context: Context,var 
 
 
     interface OnClickButton{
-        fun onClickDelete(item: SpentEntity)
         fun onClickDetails(item: SpentEntity)
-        fun onEdit(item: SpentEntity,check:Boolean)
+        fun onClickDelete(item: SpentEntity){}
+        fun onEdit(item: SpentEntity,check:Boolean){}
     }
     @SuppressLint("NotifyDataSetChanged")
     fun updateData(list:List<SpentEntity>){

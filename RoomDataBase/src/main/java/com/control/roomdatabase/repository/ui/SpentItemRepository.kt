@@ -19,7 +19,7 @@ class SpentItemRepository (context: Context) : BaseRepository(context) {
     fun getAddSpent(spent:SpentEntity) :  MutableLiveData<ResponseBase>{
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
 
-        response.value = if (!isEmptyItem(spent.description)) {
+        response.value = if (!isEmptyItem(spent.title)) {
             spentDao.insertSpent(spent)
             ResponseBase(SUCCESS, CODE_200)
         }else {
@@ -43,7 +43,7 @@ class SpentItemRepository (context: Context) : BaseRepository(context) {
     fun updateAddSpent(spent:SpentEntity) :  MutableLiveData<ResponseBase>{
         val response:MutableLiveData<ResponseBase> = MutableLiveData()
 
-        response.value = if (!isEmptyItem(spent.description)) {
+        response.value = if (!isEmptyItem(spent.title)) {
             spentDao.updateSpent(spent)
             ResponseBase(SUCCESS, CODE_200)
         }else {
@@ -74,5 +74,10 @@ class SpentItemRepository (context: Context) : BaseRepository(context) {
         return response
     }
 
+    fun getByAllSpent() : MutableLiveData<List<SpentEntity>> {
+        val response: MutableLiveData<List<SpentEntity>> = MutableLiveData()
+        response.value = spentDao.getAllSpent("")
+        return response
+    }
 
 }

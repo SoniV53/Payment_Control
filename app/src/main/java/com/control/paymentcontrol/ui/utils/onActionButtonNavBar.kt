@@ -1,5 +1,10 @@
 package com.control.paymentcontrol.ui.utils
 
+import com.control.paymentcontrol.models.AttributesDesign
+
 interface OnActionButtonNavBarMenu {
-    fun onActionAddYear()
+    fun onActionPositionOne()
+    fun onActionPositionTwo(){}
+
+    var attr:List<AttributesDesign>
 }

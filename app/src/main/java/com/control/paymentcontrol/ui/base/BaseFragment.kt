@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.control.paymentcontrol.R
+import com.control.paymentcontrol.models.AttributesDesign
+import com.control.paymentcontrol.ui.utils.FormatsMoney
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
@@ -24,6 +26,7 @@ import com.google.gson.Gson
 open class BaseFragment : Fragment() {
     private lateinit var interfaceNavBar: InterfaceNavBar
     protected var gson = Gson()
+    protected var format = FormatsMoney()
 
     protected fun showOrHiddenNavbar(boolean: Boolean){
         if (requireActivity() is InterfaceNavBar) {

@@ -16,15 +16,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterDataPayment
 import com.control.paymentcontrol.databinding.FragmentAddPaymentBinding
+import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
+import com.control.paymentcontrol.ui.utils.PutArgumentsString.ID_MONTH
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.MONTH_SELECT
+import com.control.paymentcontrol.ui.utils.PutArgumentsString.TYPE_ENT
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.YEAR_SELECT
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
 import com.control.roomdatabase.utils.Status
+import java.util.Arrays
 
 class AddPaymentFragment : BaseFragment() {
     private lateinit var binding: FragmentAddPaymentBinding
@@ -50,17 +54,34 @@ class AddPaymentFragment : BaseFragment() {
 
         binding.txtTitle.text = yearItem.name + " / " + monthItem.name
         binding.cpAmount.setText(monthItem.total)
+        if (monthItem.total.isNotEmpty())
+            totalMonth = binding.cpAmount.text.toString()
 
-
-        onClickMoreNavbar(object:OnActionButtonNavBarMenu{
-            override fun onActionAddYear() {
+        onClickMoreNavbar(object: OnActionButtonNavBarMenu {
+            override fun onActionPositionTwo() {
                 isDetails = false
                 val bundle = Bundle()
                 bundle.putString(MONTH_SELECT,gson.toJson(monthItem))
+                bundle.putInt(TYPE_ENT,1)
                 findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
             }
 
+            override fun onActionPositionOne() {
+                isDetails = false
+                val bundle = Bundle()
+                bundle.putInt(TYPE_ENT,1)
+                bundle.putString(ID_MONTH,monthItem.id.toString())
+                findNavController().navigate(R.id.action_addPaymentFragment_to_paymentFavoritesFragment,bundle)
+            }
+
+            override var attr: List<AttributesDesign>
+                get() = Arrays.asList(
+                    AttributesDesign(1,getStringRes(R.string.favorites_add),R.drawable.star_solid),
+                    AttributesDesign(2, getStringRes(R.string.menu_add_spent),R.drawable.comment_dollar_solid)
+                )
+                set(value) {}
         })
+
 
         binding.consAction.setOnClickListener{
             moreDetails()
@@ -92,13 +113,14 @@ class AddPaymentFragment : BaseFragment() {
     }
 
     private fun recyclerViewData(){
-        adapterPay = AdapterDataPayment(spentList,requireActivity(),object:AdapterDataPayment.OnClickButton{
+        adapterPay = AdapterDataPayment(spentList,requireActivity(),0,object:AdapterDataPayment.OnClickButton{
             override fun onClickDelete(item: SpentEntity) {
                 viewModel.deleteSpentStatus(requireActivity(),item)
                 viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
                     if (responseBase.status == Status.SUCCESS){
                         dialogMessageTitle(getStringRes(R.string.success_delete))
                         getOrderSpent()
+                        calcDetails()
                     }else{
                         dialogMessageDefault(getStringRes(R.string.error),
                             getStringRes(R.string.body_dialog_message_data),
@@ -114,6 +136,7 @@ class AddPaymentFragment : BaseFragment() {
 
             override fun onEdit(item: SpentEntity, check: Boolean) {
                 viewModel.updateAddSpentStatus(requireActivity(), item)
+                calcDetails()
             }
 
         })
@@ -135,6 +158,7 @@ class AddPaymentFragment : BaseFragment() {
                 if (responseBase.status == Status.SUCCESS){
                     dialogMessageTitle("Se Actualizo Monto")
                     totalMonth = binding.cpAmount.text.toString()
+                    calcDetails()
                 }else{
                     dialogMessageDefault(getStringRes(R.string.error),
                         responseBase.message,
@@ -145,6 +169,7 @@ class AddPaymentFragment : BaseFragment() {
         }else {
             if (binding.cpAmount.text.toString().isEmpty()){
                 binding.cpAmount.setText(totalMonth)
+                calcDetails()
             }
         }
 
@@ -157,13 +182,38 @@ class AddPaymentFragment : BaseFragment() {
             if (responseBase != null) {
                 spentList = responseBase.spent
                 recyclerViewData()
+                calcDetails()
             }
+
+            binding.consAction.visibility = if (spentList.size > 0) View.VISIBLE else View.GONE
+            binding.empty.visibility = if (spentList.size > 0) View.GONE else View.VISIBLE
+            if (spentList.isEmpty())
+                binding.constMoreInfo.visibility = View.GONE
         }
     }
 
     private fun calcDetails(){
-        spentList.forEach{item ->
+        payMonthTotal = 0.0;
+        payMonth = 0.0;
+        if (spentList.size > 0){
+            spentList.forEach{item ->
+                payMonthTotal += item.amount.toDouble()
+                if (item.cancelPay.equals("1"))
+                    payMonth += item.amount.toDouble()
+            }
 
+            binding.txtPayMonth.text = format.formatCurrency(payMonthTotal.toString())
+            binding.txtPayCancel.text = format.formatCurrency(payMonth.toString())
+
+            if (totalMonth.isNotEmpty()){
+                val calcPayMonth = (totalMonth.toDouble() - payMonth)
+                val calcPayMonthTotal = (totalMonth.toDouble() - payMonthTotal)
+                binding.txtAmountRest.text = format.formatCurrency(calcPayMonth.toString())
+                binding.txtAmountRestTotal.text = format.formatCurrency(calcPayMonthTotal.toString())
+
+                binding.txtAmountRest.setTextColor(  if (calcPayMonth > 0 ) requireActivity().getColor(R.color.primary_text) else requireActivity().getColor(R.color.error))
+                binding.txtAmountRestTotal.setTextColor(  if (calcPayMonthTotal > 0 ) requireActivity().getColor(R.color.primary_text) else requireActivity().getColor(R.color.error))
+            }
         }
     }
 

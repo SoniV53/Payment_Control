@@ -12,6 +12,7 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.databinding.ActivityMainBinding
+import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 
@@ -43,15 +44,22 @@ class MainActivity : AppCompatActivity() , InterfaceNavBar {
         //val wrapper: Context = ContextThemeWrapper(this,R.style.popupMenuStyle)
         val showPopUp = PopupMenu(this,v)
         showPopUp.inflate(R.menu.default_menu)
+
+        action.attr.forEach { item ->
+            when(item.position){
+                1-> getAttributesMenu(showPopUp,R.id.addItemOne,item)
+                2-> getAttributesMenu(showPopUp,R.id.addItemTwo,item)
+            }
+        }
+
         showPopUp.setOnMenuItemClickListener {item ->
             when(item.itemId){
-                   R.id.addYear -> {
-                       //item.setTitle(getString(R.string.menu_add_year))
-                       action.onActionAddYear()
+                   R.id.addItemOne -> {
+                       action.onActionPositionOne()
                        true
                    }
-                R.id.addSpent -> {
-                    Toast.makeText(this, "SIUUU", Toast.LENGTH_SHORT).show()
+                R.id.addItemTwo -> {
+                    action.onActionPositionTwo()
                     true
                 }
             }
@@ -82,5 +90,10 @@ class MainActivity : AppCompatActivity() , InterfaceNavBar {
         showPopUp.show()
     }
 
+    private fun getAttributesMenu(showPopUp:PopupMenu,id:Int,attr:AttributesDesign){
+        showPopUp.menu.findItem(id).setTitle(attr.title)
+        showPopUp.menu.findItem(id).setIcon(attr.icon)
+        showPopUp.menu.findItem(id).setVisible(attr.visible)
+    }
 
 }

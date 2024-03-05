@@ -23,6 +23,7 @@ class ServicePaymentViewModel : ViewModel() {
 
     private lateinit var addSpentDataBase: MutableLiveData<ResponseBase>
     private lateinit var getByAllSpent : MutableLiveData<MonthWithSpent>
+    private lateinit var getByAllSpentDataFull : MutableLiveData<List<SpentEntity>>
 
     /**
      * Services of Year
@@ -128,6 +129,12 @@ class ServicePaymentViewModel : ViewModel() {
         val repository = SpentItemRepository(context)
         getByAllSpent = repository.getByAllSpentMonth(idMonth)
         return getByAllSpent
+    }
+
+    fun fullBySpentData(context: Context) : MutableLiveData<List<SpentEntity>>{
+        val repository = SpentItemRepository(context)
+        getByAllSpentDataFull = repository.getByAllSpent()
+        return getByAllSpentDataFull
     }
 }
 

@@ -29,9 +29,13 @@ class FormularyPaymentFragment : BaseFragment() {
     private lateinit var viewModel: ServicePaymentViewModel
     private lateinit var monthItem: MonthEntity
     private var position = -1;
+    private var type = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
+
+        type = arguments?.getInt(PutArgumentsString.TYPE_ENT)!!
+        monthItem = gson.fromJson(arguments?.getString(PutArgumentsString.MONTH_SELECT),MonthEntity::class.java).takeIf { it != null } ?: MonthEntity("","")
     }
 
     override fun onCreateView(
@@ -40,8 +44,6 @@ class FormularyPaymentFragment : BaseFragment() {
     ): View? {
         binding = FragmentFormularyPaymentBinding.inflate(inflater, container, false)
         showOrHiddenMenuNavbar(false)
-
-        monthItem = gson.fromJson(arguments?.getString(PutArgumentsString.MONTH_SELECT),MonthEntity::class.java)
 
         var listMonthInput = requireActivity().resources.getStringArray(R.array.type_spent)
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, listMonthInput)
@@ -71,7 +73,8 @@ class FormularyPaymentFragment : BaseFragment() {
 
         }
 
-        textWatcher(binding.tiDescription)
+        binding.chCencel.visibility = if(type == 0) View.GONE else View.VISIBLE
+
         textWatcher(binding.tiAmount)
         textWatcher(binding.tiNumberQuotes)
         textWatcher(binding.tiComission)
@@ -107,12 +110,12 @@ class FormularyPaymentFragment : BaseFragment() {
             binding.tiComission.text.toString(),
             binding.tiDescription.text.toString(),
             binding.tiTitle.text.toString(),
-            if (binding.chCencel.isChecked )"1" else "0",
-            idMonth = monthItem.id.toString()
+            if (binding.chCencel.isChecked && type != 0)"1" else "0",
+            idMonth = if (type != 0) monthItem.id.toString() else ""
         ))
         viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
             if (responseBase.status == Status.SUCCESS){
-                dialogMessageTitle(getStringRes(R.string.success))
+                dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
                 requireActivity().onBackPressed()
             }else{
                 dialogMessageDefault(getStringRes(R.string.error),
@@ -125,13 +128,13 @@ class FormularyPaymentFragment : BaseFragment() {
 
     private fun disableButton(){
         when(position){
-            0 -> binding.btnContinue.isEnabled = (binding.tiDescription.text.toString().isNotEmpty() &&
+            0 -> binding.btnContinue.isEnabled = (
                     binding.tiAmount.text.toString().isNotEmpty() && binding.tiTitle.text.toString().isNotEmpty()
                     && ((binding.tiTitle.text?.toString()?.length ?: 0) <= 20))
-            1 -> binding.btnContinue.isEnabled = binding.tiDescription.text.toString().isNotEmpty() && binding.tiAmount.text.toString().isNotEmpty()
+            1 -> binding.btnContinue.isEnabled = binding.tiAmount.text.toString().isNotEmpty()
                     && binding.tiNumberQuotes.text.toString().isNotEmpty() && binding.tiTitle.text.toString().isNotEmpty()
                     && ((binding.tiTitle.text?.toString()?.length ?: 0) <= 20)
-            2 -> binding.btnContinue.isEnabled = binding.tiDescription.text.toString().isNotEmpty() && binding.tiAmount.text.toString().isNotEmpty()
+            2 -> binding.btnContinue.isEnabled =  binding.tiAmount.text.toString().isNotEmpty()
                     && binding.tiNumberQuotes.text.toString().isNotEmpty() && binding.tiComission.text.toString().isNotEmpty() && binding.tiTitle.text.toString().isNotEmpty()
         }
     }
