@@ -1,6 +1,8 @@
 package com.control.paymentcontrol.viewmodels
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.control.roomdatabase.entities.MonthEntity
@@ -135,6 +137,12 @@ class ServicePaymentViewModel : ViewModel() {
         val repository = SpentItemRepository(context)
         getByAllSpentDataFull = repository.getByAllSpent()
         return getByAllSpentDataFull
+    }
+
+    fun filterSpentAllTitle(title: String, listSpent:List<SpentEntity>) : List<SpentEntity>{
+        if (title.isNotEmpty())
+            return listSpent.filter { item -> item.title.contains(title) }.toList()
+        else return listSpent
     }
 }
 

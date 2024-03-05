@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.control.paymentcontrol.R
-import com.control.paymentcontrol.databinding.ItemCarrouselBinding
 import com.control.paymentcontrol.databinding.ItemCircleBinding
-import com.control.paymentcontrol.models.years.CreateNewYear
 
 class AdapterCircle (var count: Int,var select:Int,var context:Context): RecyclerView.Adapter<AdapterCircle.ViewHolder>(){
 
