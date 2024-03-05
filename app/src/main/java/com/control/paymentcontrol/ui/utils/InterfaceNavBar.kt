@@ -1,7 +1,9 @@
 package com.control.paymentcontrol.ui.utils
 
+import com.control.paymentcontrol.models.AttributesDesign
+
 interface InterfaceNavBar {
-    fun hiddenNavBar()
-    fun showNavbar()
-    fun onClickMore(action:OnActionButtonNavBar)
+    fun showOrHiddenNavbar(boolean: Boolean)
+    fun showOrHiddenMenuNavbar(boolean: Boolean)
+    fun onClickMore(action:OnActionButtonNavBarMenu)
 }

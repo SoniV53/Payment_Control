@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Paymentcontrol" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Base.Theme.Paymentcontrol" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_color</item>
         <item name="colorPrimaryVariant">@color/dark_primary</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -12,5 +12,15 @@
         <item name="android:statusBarColor">@color/dark_primary</item>
     </style>
 
+    <style name="popupMenuStyle" >
+        <item name="android:textColor">@color/white</item>
+        <item name="android:divider">@color/white</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="popupMenuStyle">@style/Widget.App.PopupMenu</item>
 
+    </style>
+
+    <style name="Widget.App.PopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:popupBackground">@drawable/background_button_accept</item>
+    </style>
 </resources>

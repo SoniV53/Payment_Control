@@ -50,4 +50,6 @@ dependencies {
     implementation ("androidx.fragment:fragment-ktx:1.5.3")
     annotationProcessor ("android.arch.persistence.room:compiler:1.1.1")
     implementation ("androidx.room:room-runtime:2.4.3")
+
+    implementation ("com.google.code.gson:gson:2.10.1")
 }

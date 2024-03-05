@@ -17,11 +17,12 @@ interface YearsDao {
     fun updateYear(year:YearsEntity)
     @Delete
     fun deleteYear(year: YearsEntity)
-    @Query("SELECT * FROM $YEAR_TABLE ORDER BY name DESC")
+    @Query("SELECT * FROM $YEAR_TABLE ORDER BY name ASC")
     fun getAllYears():List<YearsEntity>
-    @Query("SELECT * FROM $YEAR_TABLE WHERE id LIKE :idYear")
-    fun orderByIdYear(idYear : Int):YearsEntity
+    @Query("SELECT * FROM $YEAR_TABLE WHERE id LIKE :id")
+    fun orderByIdYear(id:String):YearsEntity
 
     @Query("SELECT * FROM $YEAR_TABLE WHERE name LIKE :name")
     fun orderByIdNameYear(name : String):YearsEntity
+
 }
