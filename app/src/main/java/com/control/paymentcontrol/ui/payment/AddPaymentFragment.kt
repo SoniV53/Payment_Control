@@ -15,10 +15,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterDataPayment
+import com.control.paymentcontrol.adapter.AdapterDataPaymentTable
 import com.control.paymentcontrol.databinding.FragmentAddPaymentBinding
 import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
+import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.ID_MONTH
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.MONTH_SELECT
 import com.control.paymentcontrol.ui.utils.PutArgumentsString.PAYMENT_SELECT
@@ -38,12 +40,14 @@ class AddPaymentFragment : BaseFragment() {
     private lateinit var yearItem: YearsEntity
     private lateinit var monthItem: MonthEntity
     private lateinit var adapterPay: AdapterDataPayment
+    private lateinit var adapterPayTable: AdapterDataPaymentTable
     private lateinit var spentList: List<SpentEntity>
     private var totalMonth = ""
     private var isDetails = false
     private var payMonthTotal = 0.00
     private var payMonth = 0.00
     private var calcPayMonthTotal = 0.00
+    private var isSelectTable = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
@@ -86,7 +90,6 @@ class AddPaymentFragment : BaseFragment() {
                 set(value) {}
         })
 
-
         binding.consAction.setOnClickListener{
             moreDetails()
         }
@@ -117,24 +120,48 @@ class AddPaymentFragment : BaseFragment() {
             binding.cpAmount.clearFocus()
         }
 
+        binding.imgTable.setOnClickListener{
+            val check = isSelectTable
+            isSelectTable = !check
+            actionTable()
+        }
+
         getOrderSpent()
+        actionTable()
 
         return binding.root
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun actionTable(){
+        if (!isSelectTable){
+            binding.imgTable.setImageDrawable(requireActivity().getDrawable(R.drawable.table_solid))
+            recyclerViewData()
+        }else{
+            binding.imgTable.setImageDrawable(requireActivity().getDrawable(R.drawable.table_solid_select))
+            recyclerViewDataTable()
+        }
     }
 
     private fun recyclerViewData(){
         adapterPay = AdapterDataPayment(spentList,requireActivity(),0,object:AdapterDataPayment.OnClickButton{
             override fun onClickDelete(item: SpentEntity) {
-                viewModel.deleteSpentStatus(requireActivity(),item).observe(requireActivity()) {responseBase ->
-                    if (responseBase.status == Status.SUCCESS){
-                        dialogMessageTitle(getStringRes(R.string.success_delete))
-                        getOrderSpent()
-                    }else{
-                        dialogMessageDefault(getStringRes(R.string.error),responseBase.message,
-                            1
-                        )
+                dialogMessageOnAction(getStringRes(R.string.delete),getStringRes(R.string.delete_message),1,getStringRes(R.string.delete),object:
+                    OnClickInterface {
+                    override fun onClickAction() {
+                        viewModel.deleteSpentStatus(requireActivity(),item).observe(requireActivity()) {responseBase ->
+                            if (responseBase.status == Status.SUCCESS){
+                                dialogMessageTitle(getStringRes(R.string.success_delete))
+                                getOrderSpent()
+                            }else{
+                                dialogMessageDefault(getStringRes(R.string.error),responseBase.message,
+                                    1
+                                )
+                            }
+                        }
                     }
-                }
+
+                })
             }
 
             override fun onClickDetails(item:SpentEntity) {
@@ -156,6 +183,20 @@ class AddPaymentFragment : BaseFragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         binding.recyclerView.adapter = adapterPay
+
+    }
+
+    private fun recyclerViewDataTable(){
+        adapterPayTable = AdapterDataPaymentTable(spentList,requireActivity(),object:AdapterDataPaymentTable.OnClickButton{
+            override fun onEdit(item: SpentEntity, check: Boolean) {
+                viewModel.updateAddSpentStatus(requireActivity(), item)
+                calcDetails()
+            }
+
+        })
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        binding.recyclerView.adapter = adapterPayTable
 
     }
 
@@ -187,11 +228,14 @@ class AddPaymentFragment : BaseFragment() {
         viewModel.fullBySpent(requireActivity(),monthItem.id.toString()).observe(requireActivity()) {responseBase ->
             if (responseBase != null) {
                 spentList = responseBase.spent
-                recyclerViewData()
+                if (!isSelectTable)
+                    recyclerViewData()
+                else recyclerViewDataTable()
                 calcDetails()
             }
 
             binding.consAction.visibility = if (spentList.size > 0) View.VISIBLE else View.GONE
+            binding.imgTable.visibility = if (spentList.size > 0) View.VISIBLE else View.GONE
             binding.empty.visibility = if (spentList.size > 0) View.GONE else View.VISIBLE
             if (spentList.isEmpty())
                 binding.constMoreInfo.visibility = View.GONE

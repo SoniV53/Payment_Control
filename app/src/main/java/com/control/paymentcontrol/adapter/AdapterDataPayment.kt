@@ -2,28 +2,15 @@ package com.control.paymentcontrol.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.InsetDrawable
-import android.os.Build
-import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
 import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.control.paymentcontrol.R
-import com.control.paymentcontrol.databinding.ItemCarrouselBinding
-import com.control.paymentcontrol.databinding.ItemMonthBinding
 import com.control.paymentcontrol.databinding.ItemPaymentListBinding
-import com.control.paymentcontrol.models.years.CreateNewYear
 import com.control.paymentcontrol.ui.utils.FormatsMoney
-import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
-import com.control.roomdatabase.entities.YearsEntity
-import com.control.roomdatabase.entities.embeddedWith.MonthWithSpent
 
 class AdapterDataPayment (var list: List<SpentEntity>,
                           var context: Context,
@@ -50,6 +37,7 @@ class AdapterDataPayment (var list: List<SpentEntity>,
     class ViewHolder(val binding: ItemPaymentListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item:SpentEntity,context: Context,listener:OnClickButton,isCancel:Boolean){
             printInf(item)
+            binding.chSelect.visibility = GONE
             if (isCancel){
                 binding.chCancel.visibility =  VISIBLE
                 onActionChecked(item,context,listener)
@@ -72,10 +60,21 @@ class AdapterDataPayment (var list: List<SpentEntity>,
             binding.chCancel.visibility = GONE
             binding.btnEliminar.visibility = GONE
             binding.btnEditar.visibility = GONE
+            binding.chSelect.visibility = VISIBLE
+
+            binding.chSelect.isChecked = item.favorite
+
+            binding.chSelect.setOnCheckedChangeListener{bu,che ->
+                item.favorite = binding.chSelect.isChecked
+                listener.onClickDetails(item)
+            }
 
             binding.dividerStatus.setBackgroundColor(context.getColor(R.color.dark_primary))
 
             binding.mainConstra.setOnClickListener{
+                val check = binding.chSelect.isChecked
+                binding.chSelect.isChecked = !check
+                item.favorite = binding.chSelect.isChecked
                 listener.onClickDetails(item)
             }
         }
@@ -119,8 +118,6 @@ class AdapterDataPayment (var list: List<SpentEntity>,
             else return "0"
         }
     }
-
-
 
     interface OnClickButton{
         fun onClickDetails(item: SpentEntity)

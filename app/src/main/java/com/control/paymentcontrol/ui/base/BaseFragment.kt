@@ -95,8 +95,10 @@ open class BaseFragment : Fragment() {
                 else R.drawable.error_solid
             )
             .position(AwesomeDialog.POSITIONS.CENTER)
-            .onPositive(titleButton,R.drawable.background_button_accept) {
+            .onPositive(titleButton,R.drawable.background_button_delete) {
                 listener.onClickAction()
+            }.onNegative("CANCELAR",R.drawable.background_button_accept) {
+
             }
     }
 

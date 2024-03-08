@@ -8,19 +8,15 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.control.paymentcontrol.R
-import com.control.paymentcontrol.databinding.ItemCarrouselBinding
 import com.control.paymentcontrol.databinding.ItemMonthBinding
-import com.control.paymentcontrol.models.years.CreateNewYear
 import com.control.paymentcontrol.ui.utils.FormatsMoney
 import com.control.roomdatabase.entities.MonthEntity
-import com.control.roomdatabase.entities.YearsEntity
 
 class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context,var listener:OnClickButton): RecyclerView.Adapter<AdapterDataMonth.ViewHolder>(){
 

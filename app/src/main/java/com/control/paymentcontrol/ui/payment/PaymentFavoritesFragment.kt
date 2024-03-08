@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.control.paymentcontrol.databinding.FragmentPaymentFavoritesBinding
 import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
+import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.control.paymentcontrol.ui.utils.PutArgumentsString
 import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
@@ -30,6 +32,7 @@ class PaymentFavoritesFragment : BaseFragment() {
     private lateinit var spentList: List<SpentEntity>
     private var type = 0
     private var idMonth = ""
+    private var isSelectTodo = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
@@ -48,6 +51,9 @@ class PaymentFavoritesFragment : BaseFragment() {
         if (type == 1){
             showOrHiddenMenuNavbar(false)
         }
+        binding.btnContinue.visibility = if (type == 1) View.VISIBLE else View.GONE
+        binding.ckSelectTodo.visibility = if (type == 1) View.VISIBLE else View.GONE
+        binding.txtSelect.visibility = if (type == 1) View.VISIBLE else View.GONE
 
         onClickMoreNavbar(object: OnActionButtonNavBarMenu {
             override fun onActionPositionOne() {
@@ -64,48 +70,81 @@ class PaymentFavoritesFragment : BaseFragment() {
                 set(value) {}
         })
 
-
-        getOrderSpent()
-
-        return binding.root
-    }
-
-    private fun recyclerViewData(){
-        adapterPay = AdapterDataPayment(spentList,requireActivity(),type,object: AdapterDataPayment.OnClickButton{
-            override fun onClickDelete(item: SpentEntity) {
-                viewModel.deleteSpentStatus(requireActivity(),item).observe(requireActivity()) {responseBase ->
-                    if (responseBase.status == Status.SUCCESS){
-                        dialogMessageTitle(getStringRes(R.string.success_delete))
-                        getOrderSpent()
-                    }else{
-                        dialogMessageDefault(getStringRes(R.string.error),responseBase.message,1)
-                    }
-                }
+        binding.ckSelectTodo.setOnCheckedChangeListener{bu,che ->
+            val check = binding.ckSelectTodo.isChecked
+            isSelectTodo = !check
+            spentList.forEach{
+                it.favorite = check
             }
 
-            override fun onClickDetails(item: SpentEntity) {
-                if (type == 1){
-                    var newPay = item
+            recyclerViewData()
+            activateButton()
+        }
+
+        getOrderSpent()
+        binding.tiSearch.addTextChangedListener {it->
+            if (adapterPay != null){
+                recyclerViewData()
+                binding.empty.visibility = if (viewModel.filterSpentAllTitle(binding.tiSearch.text.toString(),spentList).size > 0) View.GONE else View.VISIBLE
+            }
+        }
+
+        binding.btnContinue.setOnClickListener{
+            spentList.forEach{
+                if (it.favorite){
+                    var newPay = it
                     newPay.idMonth = idMonth
                     newPay.id = 0
 
                     viewModel.setAddSpentDataBase(requireActivity(), newPay)
                     viewModel.getAddSpentDataBase().observe(requireActivity()) {responseBase ->
-                        if (responseBase.status == Status.SUCCESS){
-                            dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
-                            requireActivity().onBackPressed()
-                        }else{
+                        if (responseBase.status != Status.SUCCESS){
                             dialogMessageDefault(getStringRes(R.string.error),responseBase.message,1)
                         }
                     }
-                }else{
+                }
+            }
+            dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
+            requireActivity().onBackPressed()
+        }
+
+        return binding.root
+    }
+
+    private fun recyclerViewData(){
+        adapterPay = AdapterDataPayment(viewModel.filterSpentAllTitle(binding.tiSearch.text.toString(),spentList),requireActivity(),type,object: AdapterDataPayment.OnClickButton{
+            override fun onClickDelete(item: SpentEntity) {
+                dialogMessageOnAction(getStringRes(R.string.delete),getStringRes(R.string.delete_message),1,getStringRes(R.string.delete),object:
+                    OnClickInterface {
+                    override fun onClickAction() {
+                        viewModel.deleteSpentStatus(requireActivity(),item).observe(requireActivity()) {responseBase ->
+                            if (responseBase.status == Status.SUCCESS){
+                                dialogMessageTitle(getStringRes(R.string.success_delete))
+                                getOrderSpent()
+                            }else{
+                                dialogMessageDefault(getStringRes(R.string.error),responseBase.message,1)
+                            }
+                        }
+                    }
+
+                })
+
+            }
+
+            override fun onClickDetails(item: SpentEntity) {
+                if (type == 0){
                     val bundle = Bundle()
                     bundle.putString(PutArgumentsString.PAYMENT_SELECT,gson.toJson(item))
                     bundle.putInt(PutArgumentsString.TYPE_ENT,0)
                     bundle.putBoolean(PutArgumentsString.TYPE_EDIT,true)
                     findNavController().navigate(R.id.action_paymentFavoritesFragment_to_formularyPaymentFragment,bundle)
+                }else{
+                    spentList.forEach{
+                        if (item.title.equals(it.title))
+                            it.favorite = item.favorite
+                    }
+                    activateButton()
                 }
-
             }
 
         },false)
@@ -124,9 +163,18 @@ class PaymentFavoritesFragment : BaseFragment() {
                 spentList = responseBase.toList()
                 recyclerViewData()
             }
-
             binding.empty.visibility = if (spentList.size > 0) View.GONE else View.VISIBLE
         }
+    }
+
+    private fun activateButton(){
+        var isActive = false;
+        spentList.forEach{
+            if (it.favorite){
+                isActive = true
+            }
+        }
+        binding.btnContinue.isEnabled = isActive
     }
 
     override fun onDestroy() {
