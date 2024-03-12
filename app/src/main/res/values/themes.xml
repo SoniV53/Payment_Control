@@ -23,4 +23,10 @@
     <style name="Widget.App.PopupMenu" parent="Widget.MaterialComponents.PopupMenu">
         <item name="android:popupBackground">@drawable/background_button_accept</item>
     </style>
+
+    <declare-styleable name="IconItemAttr">
+        <attr name="title" format="string">2024</attr>
+        <attr name="visible" format="string"/>
+        <!-- Agrega aquí otros atributos personalizados si los necesitas -->
+    </declare-styleable>
 </resources>
