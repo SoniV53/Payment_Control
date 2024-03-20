@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterDataPayment
+import com.control.paymentcontrol.adapter.AdapterDataPaymentTable
 import com.control.paymentcontrol.component.constraint.BackgroundCalendar
 import com.control.paymentcontrol.ui.base.BaseFragment
 import com.control.paymentcontrol.ui.utils.FormatsMoney
@@ -35,8 +36,9 @@ class ControllerDataMovements(
     var calcPayMonthTotal = 0.00
     var totalMonth = ""
 
+    lateinit var adapterPay: AdapterDataPayment
+    lateinit var adapterMo: AdapterDataPaymentTable
     private var format = FormatsMoney()
-    private lateinit var adapterPay: AdapterDataPayment
 
 
     private fun  init(){
@@ -46,7 +48,6 @@ class ControllerDataMovements(
         totalMonth = monthItem.total
 
         calendar.getBindingCalendar().tableCardResults.visibility = View.VISIBLE
-        calendar.getBindingCalendar().btnContinue.visibility = View.GONE
         calendar.getBindingCalendar().txtPres.text = format.formatCurrency(monthItem?.total.toString())
         calendar.getBindingCalendar().txtGas.text = format.formatCurrency(monthItem?.payTotalMonth.toString())
 
@@ -76,8 +77,11 @@ class ControllerDataMovements(
                 spentList = responseBase.spent
                 recyclerViewData()
                 setUpdateMonth()
+                calendar.getBindingCalendar().empty.visibility = if (spentList.isEmpty()) View.VISIBLE else View.GONE
+            }else{
+                calendar.getBindingCalendar().empty.visibility = View.VISIBLE
             }
-            calendar.getBindingCalendar().empty.visibility = if (spentList.isEmpty()) View.VISIBLE else View.GONE
+
         }
     }
 
@@ -120,19 +124,8 @@ class ControllerDataMovements(
     }
 
     private fun recyclerViewData(){
-        adapterPay = AdapterDataPayment(spentList,requiredActivity,0,object: AdapterDataPayment.OnClickButton{
-            override fun onClickDelete(item: SpentEntity) {
-                baseFragment.dialogMessageOnAction(baseFragment.getStringRes(R.string.delete),
-                    baseFragment.getStringRes(R.string.delete_message),1,baseFragment.getStringRes(R.string.delete),object:
-                    OnClickInterface {
-                    override fun onClickAction() {
-                        deleteSpent(item)
-                    }
-
-                })
-            }
-
-            override fun onClickDetails(item: SpentEntity) {
+        adapterMo = AdapterDataPaymentTable(viewModel.getListMovementSpent(spentList),requiredActivity,object : AdapterDataPaymentTable.OnClickButton{
+            override fun onEdit(item: SpentEntity) {
                 if (idNav != 0){
                     val bundle = Bundle()
                     bundle.putString(PutArgumentsString.MONTH_SELECT,gson.toJson(monthItem))
@@ -144,14 +137,21 @@ class ControllerDataMovements(
                 //fragment.findNavController().navigate(R.id.action_detailsMovementPayFragment_to_formularyPaymentFragment,bundle)
             }
 
-            override fun onEdit(item: SpentEntity, check: Boolean) {
+            override fun onDelete(item: SpentEntity) {
+                baseFragment.dialogMessageOnAction(baseFragment.getStringRes(R.string.delete),
+                    baseFragment.getStringRes(R.string.delete_message),1,baseFragment.getStringRes(R.string.delete),object:
+                        OnClickInterface {
+                        override fun onClickAction() {
+                            deleteSpent(item)
+                        }
 
+                    })
             }
 
         })
 
         calendar.getBindingCalendar().reciclerView.layoutManager = LinearLayoutManager(requiredActivity)
-        calendar.getBindingCalendar().reciclerView.adapter = adapterPay
+        calendar.getBindingCalendar().reciclerView.adapter = adapterMo
 
     }
 

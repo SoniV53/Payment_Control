@@ -12,6 +12,7 @@ import androidx.appcompat.widget.PopupMenu
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.databinding.ActivityMainBinding
 import com.control.paymentcontrol.models.AttributesDesign
+import com.control.paymentcontrol.ui.home.HomeFragment
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 

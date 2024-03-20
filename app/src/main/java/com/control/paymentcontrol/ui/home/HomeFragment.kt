@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -91,7 +92,6 @@ class HomeFragment : BaseFragment() {
             findNavController().navigate(R.id.action_homeFragment_to_addYearFragment)
         }
         getDataInit()
-
         return binding.root
     }
 
@@ -110,16 +110,6 @@ class HomeFragment : BaseFragment() {
             getOrderListMonth(true)
         }
         onActionClick()
-
-        controllerMov = ControllerDataMovements(
-            binding.movementCalendar,
-            monthItem!!,
-            viewModel,
-            requireActivity(),
-            this,
-            this)
-
-        controllerMov.getOrderSpent()
     }
 
     private fun onActionClick(){
@@ -156,18 +146,7 @@ class HomeFragment : BaseFragment() {
                 dialogMessageOnAction(getStringRes(R.string.delete),getStringRes(R.string.delete_message),1,getStringRes(R.string.delete),object:
                     OnClickInterface {
                     override fun onClickAction() {
-                        viewModel.setDeleteMonthDataBase(requireActivity(), item)
-                        viewModel.getDeleteMonthDataBase().observe(requireActivity()) {responseBase ->
-                            if (responseBase.status == SUCCESS){
-                                getOrderListMonth()
-                                dialogMessageTitle(getStringRes(R.string.body_dialog_delete_message_success))
-                            }else{
-                                dialogMessageDefault(getStringRes(R.string.error),
-                                    getStringRes(R.string.body_dialog_message_data),
-                                    1
-                                )
-                            }
-                        }
+                        deleteMonth(item)
                     }
 
                 })
@@ -186,52 +165,21 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun activeSelectDate(){
-        binding.movementCalendar.getBindingCalendar().txtTitle.text = monthItem?.name
         selectMonth = true
-        getOrderSpent(monthItem?.id.toString())
-
-        binding.movementCalendar.getBindingCalendar().tableCardResults.visibility = View.VISIBLE
         binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.VISIBLE
-        binding.movementCalendar.getBindingCalendar().txtPres.text = format.formatCurrency(monthItem?.total.toString())
-        binding.movementCalendar.getBindingCalendar().txtGas.text = format.formatCurrency(monthItem?.payTotalMonth.toString())
+        controllerMov = ControllerDataMovements(
+            binding.movementCalendar,
+            monthItem!!,
+            viewModel,
+            requireActivity(),
+            this,
+            this,
+            idNav = R.id.action_homeFragment_to_formularyPaymentFragment)
 
-        val rest = if (monthItem?.payTotalMonth.toString().isNotEmpty() && monthItem?.total.toString().isNotEmpty())
-            monthItem?.total.toString().toDouble() - monthItem?.payTotalMonth.toString().toDouble() else 0.0
-        binding.movementCalendar.getBindingCalendar().txtRest.text = format.formatCurrency(rest.toString())
-    }
-    //Recycler View de movimientos
-    private fun recyclerViewData(){
-        adapterPay = AdapterDataPayment(spentList,requireActivity(),0,object: AdapterDataPayment.OnClickButton{
-            override fun onClickDelete(item: SpentEntity) {
-            }
-
-            override fun onClickDetails(item:SpentEntity) {
-
-            }
-
-            override fun onEdit(item: SpentEntity, check: Boolean) {
-
-            }
-
-        })
-
-        binding.movementCalendar.getBindingCalendar().reciclerView.layoutManager = LinearLayoutManager(requireActivity())
-        binding.movementCalendar.getBindingCalendar().reciclerView.adapter = adapterPay
+        controllerMov.getOrderSpent()
 
     }
 
-    /**
-     * Servicio que trae los gastos
-     */
-    private fun getOrderSpent(id:String){
-        viewModel.fullBySpent(requireActivity(),id).observe(requireActivity()) {responseBase ->
-            if (responseBase != null) {
-                spentList = responseBase.spent
-                recyclerViewData()
-            }
-            binding.movementCalendar.getBindingCalendar().empty.visibility = if (spentList.isEmpty()) View.VISIBLE else View.GONE
-        }
-    }
 
     private fun getOrderListMonth(isReset:Boolean = false){
         viewModel.fullByMonths(requireActivity(),yearItem?.id.toString()).observe(requireActivity()) {responseBase ->
@@ -283,5 +231,22 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+    /**
+     * Elimina mes
+     */
+    private fun deleteMonth(item:MonthEntity){
+        viewModel.setDeleteMonthDataBase(requireActivity(), item)
+        viewModel.getDeleteMonthDataBase().observe(requireActivity()) {responseBase ->
+            if (responseBase.status == SUCCESS){
+                getOrderListMonth()
+                dialogMessageTitle(getStringRes(R.string.body_dialog_delete_message_success))
+            }else{
+                dialogMessageDefault(getStringRes(R.string.error),
+                    getStringRes(R.string.body_dialog_message_data),
+                    1
+                )
+            }
+        }
+    }
 
 }

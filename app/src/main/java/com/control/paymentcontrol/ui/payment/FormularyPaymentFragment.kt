@@ -49,7 +49,6 @@ class FormularyPaymentFragment : BaseFragment() {
         binding = FragmentFormularyPaymentBinding.inflate(inflater, container, false)
         showOrHiddenMenuNavbar(false)
 
-
         var listMonthInput = requireActivity().resources.getStringArray(R.array.type_spent)
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, listMonthInput)
         val autoText = (binding.menuType.editText as? AutoCompleteTextView);

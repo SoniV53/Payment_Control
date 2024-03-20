@@ -28,7 +28,7 @@ open class BaseFragment : Fragment() {
     private lateinit var interfaceNavBar: InterfaceNavBar
     protected var gson = Gson()
     protected var format = FormatsMoney()
-     protected fun showOrHiddenNavbar(boolean: Boolean){
+    protected fun showOrHiddenNavbar(boolean: Boolean){
         if (requireActivity() is InterfaceNavBar) {
             interfaceNavBar =  requireActivity() as InterfaceNavBar
             interfaceNavBar.showOrHiddenNavbar(boolean)
@@ -56,6 +56,18 @@ open class BaseFragment : Fragment() {
         }
     }
 
+    protected fun callBackPressed(enable:Boolean){
+        var callback = object :OnBackPressedCallback(false){
+            override fun handleOnBackPressed() {
+                if (!enable){
+                    isEnabled = true
+                    requireActivity().onBackPressed()
+                }
+
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),callback)
+    }
     protected fun addPreferenceCache(value:String ){
         val sharedPreferences = requireActivity().getSharedPreferences(
             SharedPrefArguments.CONFIG_PREFERENCE, Context.MODE_PRIVATE)

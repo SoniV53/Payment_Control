@@ -17,6 +17,7 @@
     <color name="yellow">#FFC107</color>
     <color name="yellow_light">#FFE0B2</color>
     <color name="success">#51B61A</color>
+    <color name="green_table">#5ACE90</color>
     <color name="error">#9A1515</color>
 
 </resources>

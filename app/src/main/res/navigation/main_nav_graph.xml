@@ -11,9 +11,6 @@
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_addPaymentFragment"
-            app:destination="@id/addPaymentFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_paymentFavoritesFragment"
             app:destination="@id/paymentFavoritesFragment" />
         <action
@@ -22,18 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_detailsMovementPayFragment"
             app:destination="@id/detailsMovementPayFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/addPaymentFragment"
-        android:name="com.control.paymentcontrol.ui.payment.AddPaymentFragment"
-        android:label="fragment_add_payment"
-        tools:layout="@layout/fragment_add_payment" >
         <action
-            android:id="@+id/action_addPaymentFragment_to_formularyPaymentFragment"
+            android:id="@+id/action_homeFragment_to_formularyPaymentFragment"
             app:destination="@id/formularyPaymentFragment" />
-        <action
-            android:id="@+id/action_addPaymentFragment_to_paymentFavoritesFragment"
-            app:destination="@id/paymentFavoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/formularyPaymentFragment"

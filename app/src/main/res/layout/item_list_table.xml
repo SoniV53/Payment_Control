@@ -3,140 +3,383 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
 
-    <TableLayout
-        android:id="@+id/tableLayout2"
-        android:layout_width="match_parent"
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/gridTitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/background_title_table"
+        android:visibility="gone"
+        app:columnCount="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:rowCount="1">
 
-        <TableRow
-            android:id="@+id/tbTitle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:layout_columnWeight="1"
+            app:layout_rowWeight="2">
 
             <TextView
-                android:id="@+id/txtTitle4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Tipo"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:layout_columnWeight="2"
+            app:layout_rowWeight="1">
+
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/paid"
-                android:textAlignment="viewStart"
-                android:textColor="@color/primary_text"
-                android:textSize="16sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Titulo"
+                android:textColor="@color/white"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/txtTitle1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/title"
-                android:textAlignment="center"
-                android:textColor="@color/primary_text"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:layout_columnWeight="2"
+            app:layout_rowWeight="1">
 
             <TextView
-                android:id="@+id/txtTitle2"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/description"
-                android:textAlignment="center"
-                android:textColor="@color/primary_text"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/txtTitle3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/amount"
+                android:layout_height="wrap_content"
+                android:text="Monto"
                 android:textAlignment="textEnd"
-                android:textColor="@color/primary_text"
-                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
-        </TableRow>
+        </FrameLayout>
 
-        <TableRow
-            android:id="@+id/tbContent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="4dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-                <CheckBox
-                    android:id="@+id/chCancel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAlignment="textEnd" />
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/txtTitleItem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:maxWidth="100dp"
-                android:minWidth="100dp"
-                android:text="TextView"
-                android:textAlignment="textStart"
-                android:textColor="@color/primary_text" />
-
-            <TextView
-                android:id="@+id/txtDesItem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:maxWidth="100dp"
-                android:minWidth="100dp"
-                android:text="TextView"
-                android:textAlignment="viewStart"
-                android:textColor="@color/primary_text" />
-
-            <TextView
-                android:id="@+id/txtAmountItem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:maxWidth="100dp"
-                android:minWidth="100dp"
-                android:text="TextView"
-                android:textAlignment="textEnd"
-                android:textColor="@color/primary_text" />
-
-        </TableRow>
-
-    </TableLayout>
+    </androidx.gridlayout.widget.GridLayout>
 
     <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:background="@color/divider"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/cardMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayout2"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <com.zerobranch.layout.SwipeLayout
+            android:id="@+id/swipeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:draggedItem="@id/constraintData"
+            app:leftItem="@id/leftView"
+            app:rightItem="@id/rightView"
+            app:swipeDirection="left|right">
+
+            <ImageView
+                android:id="@+id/rightView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end|center"
+                android:background="@color/primary_color"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:src="@drawable/delete_white" />
+
+            <ImageView
+                android:id="@+id/leftView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|center"
+                android:background="@color/accent"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:src="@drawable/edit_solid" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintData"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_first_table"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.gridlayout.widget.GridLayout
+                    android:id="@+id/gridData"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:columnCount="3"
+                    app:layout_columnWeight="3"
+                    app:layout_constraintBottom_toTopOf="@+id/tbrQuotes"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:rowCount="2">
+
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        app:layout_columnWeight="1"
+                        app:layout_rowWeight="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txtTipe"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Normal"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+
+                            <include
+                                android:id="@+id/includeCheck"
+                                layout="@layout/item_check"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        app:layout_columnWeight="2"
+                        app:layout_rowWeight="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txtName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Normal"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txtDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="Normal"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        app:layout_columnWeight="2"
+                        app:layout_rowWeight="2">
+
+                        <TextView
+                            android:id="@+id/txtAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|end"
+                            android:text="Normal"
+
+                            android:textColor="@color/success"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                </androidx.gridlayout.widget.GridLayout>
+
+                <TableLayout
+                    android:id="@+id/tbrQuotes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/num_quotes_pay"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txtNumQuotesPay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="TextView"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/amount"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/txtAmountQuotePay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="TextView"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/success"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/number_quotas"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txtNumQuotes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="TextView"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/amount"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/primary_text"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/txtAmountQuote"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="TextView"
+                                android:textAlignment="textEnd"
+                                android:textColor="@color/success"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="57dp"
+                        android:background="@drawable/background_divider_sup">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_weight="1"
+                            android:text="@string/total"
+                            android:textColor="@color/primary_text"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/txtAmountQuoteRest"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_weight="1"
+                            android:text="TextView"
+                            android:textAlignment="textEnd"
+                            android:textColor="@color/success"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                    </TableRow>
+
+                </TableLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.zerobranch.layout.SwipeLayout>
 
     </FrameLayout>
 

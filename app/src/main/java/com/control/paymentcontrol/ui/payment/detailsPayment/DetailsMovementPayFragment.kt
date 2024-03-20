@@ -51,7 +51,6 @@ class DetailsMovementPayFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDetailsMovementPayBinding.inflate(inflater,container,false)
-
         onClickMoreNavbar(object: OnActionButtonNavBarMenu {
             override fun onActionPositionTwo() {
                 isDetails = false
@@ -85,14 +84,15 @@ class DetailsMovementPayFragment : BaseFragment() {
 
     private fun  init(){
         binding.txtBalance.text = format.formatCurrency(monthItem?.total.toString())
-
+        binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.GONE
         controllerMov = ControllerDataMovements(
             binding.movementCalendar,
             monthItem,
             viewModel,
             requireActivity(),
             this,
-            this)
+            this,
+            idNav = R.id.action_detailsMovementPayFragment_to_formularyPaymentFragment)
 
         controllerMov.getOrderSpent()
     }
