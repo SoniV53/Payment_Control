@@ -4,20 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
 import com.control.paymentcontrol.adapter.AdapterDataMonth
+import com.control.paymentcontrol.adapter.AdapterDataPayment
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
+import com.control.paymentcontrol.databinding.ItemFragmentDetailsBinding
 import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
+import com.control.paymentcontrol.ui.payment.detailsPayment.ControllerDataMovements
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.control.paymentcontrol.ui.utils.PutArgumentsString
@@ -27,20 +27,10 @@ import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
-import com.control.roomdatabase.repository.ui.YearItemRepository
-import com.control.roomdatabase.utils.Status
 import com.control.roomdatabase.utils.Status.SUCCESS
-import com.example.awesomedialog.AwesomeDialog
-import com.example.awesomedialog.body
-import com.example.awesomedialog.onNegative
-import com.example.awesomedialog.onPositive
-import com.example.awesomedialog.title
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
-import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
 import java.util.Arrays
-import java.util.Calendar
-import java.util.Objects
 
 class HomeFragment : BaseFragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -49,11 +39,16 @@ class HomeFragment : BaseFragment() {
     private lateinit var adapterCarrousel: AdapterCarrousel
     private lateinit var adapterCircle: AdapterCircle
     private lateinit var adapterMonth: AdapterDataMonth
+    private lateinit var adapterPay: AdapterDataPayment
     private lateinit var viewModel: ServicePaymentViewModel
     private var positionCarrousel: Int = 0
     private var yearItem:YearsEntity ?= null
+    private var monthItem:MonthEntity ?= null
     private lateinit var listMonth: List<MonthEntity>
     private lateinit var listMonthOriginal: List<MonthEntity>
+    private lateinit var spentList: List<SpentEntity>
+    private var selectMonth = false
+    private lateinit var controllerMov:ControllerDataMovements
 
 
 
@@ -69,6 +64,9 @@ class HomeFragment : BaseFragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
         showOrHiddenMenuNavbar(true)
+        if (!yearItem?.name.equals(getPreferenceGson()?.name))
+            selectMonth = false
+
         yearItem = getPreferenceGson()
 
 
@@ -105,9 +103,137 @@ class HomeFragment : BaseFragment() {
 
         binding.constrainEmpty.visibility = if (isPreferenceData()) View.VISIBLE else View.GONE
         binding.mainConstra.visibility = if (!isPreferenceData()) View.VISIBLE else View.GONE
+        binding.movementCalendar.getBindingCalendar().txtTitle.text = getStringRes(R.string.add)
+        binding.movementCalendar.getBindingCalendar().tableCardResults.visibility = View.GONE
+        binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.GONE
+        if (selectMonth){
+            getOrderListMonth(true)
+        }
+        onActionClick()
+
+        controllerMov = ControllerDataMovements(
+            binding.movementCalendar,
+            monthItem!!,
+            viewModel,
+            requireActivity(),
+            this,
+            this)
+
+        controllerMov.getOrderSpent()
     }
 
-    private fun getOrderListMonth(){
+    private fun onActionClick(){
+        binding.iconDate.setOnClickListener{
+            findNavController().navigate(R.id.action_homeFragment_to_addYearFragment)
+        }
+
+        binding.movementCalendar.getBindingCalendar().cardTitle.setOnClickListener{
+            if (selectMonth){
+                binding.movementCalendar.getBindingCalendar().txtTitle.text = getStringRes(R.string.add)
+                selectMonth = false
+                if (!isPreferenceData()){
+                    getOrderListMonth()
+                }
+                binding.movementCalendar.getBindingCalendar().tableCardResults.visibility = View.GONE
+                binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.GONE
+            }else{
+                getOrderNewListMonth()
+            }
+        }
+
+        binding.movementCalendar.getBindingCalendar().btnContinue.setOnClickListener{
+            val bundle = Bundle()
+            bundle.putString(YEAR_SELECT,gson.toJson(yearItem))
+            bundle.putString(MONTH_SELECT,gson.toJson(monthItem))
+            //findNavController().navigate(R.id.action_homeFragment_to_addPaymentFragment,bundle)
+            findNavController().navigate(R.id.action_homeFragment_to_detailsMovementPayFragment,bundle)
+        }
+    }
+
+    private fun recyclerViewMonth(){
+        adapterMonth = AdapterDataMonth(listMonth,requireActivity(),object: AdapterDataMonth.OnClickButton{
+            override fun onClickDelete(item: MonthEntity) {
+                dialogMessageOnAction(getStringRes(R.string.delete),getStringRes(R.string.delete_message),1,getStringRes(R.string.delete),object:
+                    OnClickInterface {
+                    override fun onClickAction() {
+                        viewModel.setDeleteMonthDataBase(requireActivity(), item)
+                        viewModel.getDeleteMonthDataBase().observe(requireActivity()) {responseBase ->
+                            if (responseBase.status == SUCCESS){
+                                getOrderListMonth()
+                                dialogMessageTitle(getStringRes(R.string.body_dialog_delete_message_success))
+                            }else{
+                                dialogMessageDefault(getStringRes(R.string.error),
+                                    getStringRes(R.string.body_dialog_message_data),
+                                    1
+                                )
+                            }
+                        }
+                    }
+
+                })
+            }
+
+            override fun onClickDetails(item: MonthEntity) {
+                monthItem = item
+                activeSelectDate()
+            }
+
+        })
+        val layoutManager = GridLayoutManager(requireActivity(),3)
+        binding.movementCalendar.getBindingCalendar().reciclerView.layoutManager = layoutManager
+        binding.movementCalendar.getBindingCalendar().reciclerView.adapter = adapterMonth
+
+    }
+
+    private fun activeSelectDate(){
+        binding.movementCalendar.getBindingCalendar().txtTitle.text = monthItem?.name
+        selectMonth = true
+        getOrderSpent(monthItem?.id.toString())
+
+        binding.movementCalendar.getBindingCalendar().tableCardResults.visibility = View.VISIBLE
+        binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.VISIBLE
+        binding.movementCalendar.getBindingCalendar().txtPres.text = format.formatCurrency(monthItem?.total.toString())
+        binding.movementCalendar.getBindingCalendar().txtGas.text = format.formatCurrency(monthItem?.payTotalMonth.toString())
+
+        val rest = if (monthItem?.payTotalMonth.toString().isNotEmpty() && monthItem?.total.toString().isNotEmpty())
+            monthItem?.total.toString().toDouble() - monthItem?.payTotalMonth.toString().toDouble() else 0.0
+        binding.movementCalendar.getBindingCalendar().txtRest.text = format.formatCurrency(rest.toString())
+    }
+    //Recycler View de movimientos
+    private fun recyclerViewData(){
+        adapterPay = AdapterDataPayment(spentList,requireActivity(),0,object: AdapterDataPayment.OnClickButton{
+            override fun onClickDelete(item: SpentEntity) {
+            }
+
+            override fun onClickDetails(item:SpentEntity) {
+
+            }
+
+            override fun onEdit(item: SpentEntity, check: Boolean) {
+
+            }
+
+        })
+
+        binding.movementCalendar.getBindingCalendar().reciclerView.layoutManager = LinearLayoutManager(requireActivity())
+        binding.movementCalendar.getBindingCalendar().reciclerView.adapter = adapterPay
+
+    }
+
+    /**
+     * Servicio que trae los gastos
+     */
+    private fun getOrderSpent(id:String){
+        viewModel.fullBySpent(requireActivity(),id).observe(requireActivity()) {responseBase ->
+            if (responseBase != null) {
+                spentList = responseBase.spent
+                recyclerViewData()
+            }
+            binding.movementCalendar.getBindingCalendar().empty.visibility = if (spentList.isEmpty()) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun getOrderListMonth(isReset:Boolean = false){
         viewModel.fullByMonths(requireActivity(),yearItem?.id.toString()).observe(requireActivity()) {responseBase ->
             if (responseBase != null) {
                 val result = mutableListOf<MonthEntity>()
@@ -115,9 +241,15 @@ class HomeFragment : BaseFragment() {
                 result.add(MonthEntity("",""))
                 listMonth = result
                 listMonthOriginal = responseBase
+                recyclerViewMonth()
 
+                if (isReset && monthItem != null){
+                    monthItem = listMonth.filter { item ->  monthItem!!.id.equals(item.id)}.component1()
+                    activeSelectDate()
+                }
             }
 
+            binding.movementCalendar.getBindingCalendar().empty.visibility = if (listMonthOriginal.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 

@@ -3,10 +3,15 @@ package com.control.paymentcontrol.component.constraint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.control.paymentcontrol.R
+import com.control.paymentcontrol.databinding.BackgroundCalendarBinding
+import com.control.paymentcontrol.databinding.FragmentHomeBinding
+import com.control.paymentcontrol.databinding.ItemCarrouselBinding
 
 class BackgroundCalendar : ConstraintLayout {
+    private lateinit var binding: BackgroundCalendarBinding
 
     constructor(context: Context) : super(context) {
         initialize()
@@ -22,6 +27,11 @@ class BackgroundCalendar : ConstraintLayout {
     }
 
     private fun initialize() {
-        LayoutInflater.from(context).inflate(R.layout.background_calendar, this, true)
+        binding = BackgroundCalendarBinding.inflate(LayoutInflater.from(context), this, true)
+
+    }
+
+    fun getBindingCalendar():BackgroundCalendarBinding{
+       return binding
     }
 }

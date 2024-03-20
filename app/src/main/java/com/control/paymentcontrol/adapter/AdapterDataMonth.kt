@@ -48,9 +48,15 @@ class AdapterDataMonth (var listYear: List<MonthEntity>,var context: Context,var
             binding.frameMain.visibility = if (item.name?.isNotEmpty()!!) VISIBLE else GONE
             binding.contentDiv.visibility = if (item.name?.isNotEmpty()!!) GONE else VISIBLE
 
-            binding.cardMain.setOnClickListener{
+            binding.root.setOnClickListener{
                 listener.onClickDetails(item)
             }
+            binding.root.setOnLongClickListener {
+                listener.onClickDelete(item)
+                true
+            }
+
+
 
             binding.actionMenu.setOnClickListener {v ->
                 showMenu(v,context,listener,item)

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fount_fragment">
+    android:background="@android:color/transparent">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardTitle"
+            android:id="@+id/cardMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="16dp"
@@ -43,6 +43,7 @@
                     android:background="@color/three_color">
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minWidth="150dp"
@@ -73,6 +74,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
+
+                    <Button
+                        android:id="@+id/btnContinue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/accept"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/tableCardResults"
@@ -142,7 +154,7 @@
                                 android:layout_weight="1">
 
                                 <TextView
-                                    android:id="@+id/textView4"
+                                    android:id="@+id/txtPres"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
@@ -151,7 +163,7 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/textView2"
+                                    android:id="@+id/txtGas"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
@@ -161,7 +173,7 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/textView3"
+                                    android:id="@+id/txtRest"
                                     android:layout_width="0dp"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
@@ -175,6 +187,7 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.control.paymentcontrol.component.constraint.ConstraintEmpty
+                        android:id="@+id/empty"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -185,16 +198,18 @@
                         app:layout_constraintTop_toBottomOf="@+id/tableCardResults" />
 
                     <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/reciclerView"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
                         android:layout_marginEnd="4dp"
                         android:layout_marginBottom="4dp"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/btnContinue"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.495"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tableCardResults" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>

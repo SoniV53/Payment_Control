@@ -11,6 +11,7 @@ import com.control.paymentcontrol.ui.utils.FormatsMoney
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
+import com.control.paymentcontrol.ui.utils.PreferenceCacheData
 import com.control.paymentcontrol.ui.utils.SharedPrefArguments
 import com.control.roomdatabase.entities.YearsEntity
 import com.example.awesomedialog.AwesomeDialog
@@ -27,8 +28,7 @@ open class BaseFragment : Fragment() {
     private lateinit var interfaceNavBar: InterfaceNavBar
     protected var gson = Gson()
     protected var format = FormatsMoney()
-
-    protected fun showOrHiddenNavbar(boolean: Boolean){
+     protected fun showOrHiddenNavbar(boolean: Boolean){
         if (requireActivity() is InterfaceNavBar) {
             interfaceNavBar =  requireActivity() as InterfaceNavBar
             interfaceNavBar.showOrHiddenNavbar(boolean)
@@ -72,18 +72,17 @@ open class BaseFragment : Fragment() {
     }
 
     protected fun isPreferenceData(): Boolean{
-        println("ITEM DATA: " + getPreferenceCache())
         return getPreferenceCache() == null || getPreferenceCache()?.isEmpty() == true
     }
     protected fun getPreferenceGson(): YearsEntity?{
-        return Gson().fromJson(getPreferenceCache(),YearsEntity::class.java)
+        return Gson().fromJson(getPreferenceCache(), YearsEntity::class.java)
     }
 
 
-    protected fun getStringRes(resource:Int):String{
+    fun getStringRes(resource:Int):String{
         return requireActivity().getString(resource)
     }
-    protected fun dialogMessageDefault(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),type:Int = 0){
+    fun dialogMessageDefault(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),type:Int = 0){
         AwesomeDialog.build(requireActivity())
             .title(title)
             .body(body)
@@ -96,7 +95,7 @@ open class BaseFragment : Fragment() {
             .onPositive(getStringRes(R.string.accept), R.drawable.background_button_accept) {}
     }
 
-    protected fun dialogMessageTitle(title:String = getStringRes(R.string.success),type:Int = 0){
+    fun dialogMessageTitle(title:String = getStringRes(R.string.success),type:Int = 0){
         AwesomeDialog.build(requireActivity())
             .title(title)
             .icon(
@@ -108,7 +107,7 @@ open class BaseFragment : Fragment() {
             .onPositive(getStringRes(R.string.accept), R.drawable.background_button_accept) {}
     }
 
-    protected fun dialogMessageOnAction(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),
+    fun dialogMessageOnAction(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),
             type:Int = 0,titleButton:String = "",listener:OnClickInterface){
 
         AwesomeDialog.build(requireActivity())

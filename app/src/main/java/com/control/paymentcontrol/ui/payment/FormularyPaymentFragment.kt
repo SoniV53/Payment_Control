@@ -81,6 +81,9 @@ class FormularyPaymentFragment : BaseFragment() {
                 1 -> visibleQuote(true,pos = position)
                 2 -> visibleQuote(true,true,pos = position)
             }
+        }else{
+            autoText?.setText(autoText?.getAdapter()?.getItem(0).toString(), false)
+            visibleQuote(pos = 0)
         }
 
 

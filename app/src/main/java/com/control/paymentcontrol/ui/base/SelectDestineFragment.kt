@@ -33,7 +33,7 @@ class SelectDestineFragment : BaseFragment() {
         var suppor = requireActivity().supportFragmentManager
 
 
-        if (getPreferenceCache() != null){
+        if ( getPreferenceCache() != null){
             suppor.commit {
                 setReorderingAllowed(true)
                 add(R.id.frameMain, HomeFragment())

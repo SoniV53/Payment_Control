@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addYearFragment"
             app:destination="@id/addYearFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_detailsMovementPayFragment"
+            app:destination="@id/detailsMovementPayFragment" />
     </fragment>
     <fragment
         android:id="@+id/addPaymentFragment"
@@ -55,7 +58,14 @@
         android:id="@+id/detailsMovementPayFragment"
         android:name="com.control.paymentcontrol.ui.payment.detailsPayment.DetailsMovementPayFragment"
         android:label="fragment_details_movement_pay"
-        tools:layout="@layout/fragment_details_movement_pay" />
+        tools:layout="@layout/fragment_details_movement_pay" >
+        <action
+            android:id="@+id/action_detailsMovementPayFragment_to_formularyPaymentFragment"
+            app:destination="@id/formularyPaymentFragment" />
+        <action
+            android:id="@+id/action_detailsMovementPayFragment_to_paymentFavoritesFragment"
+            app:destination="@id/paymentFavoritesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addYearFragment"
         android:name="com.control.paymentcontrol.ui.home.AddYearFragment"
