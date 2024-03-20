@@ -7,12 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.widget.PopupMenu
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.databinding.ActivityMainBinding
 import com.control.paymentcontrol.models.AttributesDesign
+import com.control.paymentcontrol.ui.home.HomeFragment
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 
@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() , InterfaceNavBar {
         binding.navBar.actionMenu.setOnClickListener {v ->
             showMenu(v,action)
         }
-
     }
     @SuppressLint("RestrictedApi", "ObsoleteSdkInt")
     private fun showMenu(v: View,action: OnActionButtonNavBarMenu) {

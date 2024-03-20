@@ -4,19 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.control.paymentcontrol.R
 import com.control.paymentcontrol.adapter.AdapterCarrousel
 import com.control.paymentcontrol.adapter.AdapterCircle
 import com.control.paymentcontrol.adapter.AdapterDataMonth
+import com.control.paymentcontrol.adapter.AdapterDataPayment
 import com.control.paymentcontrol.databinding.FragmentHomeBinding
+import com.control.paymentcontrol.databinding.ItemFragmentDetailsBinding
 import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
+import com.control.paymentcontrol.ui.payment.detailsPayment.ControllerDataMovements
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.control.paymentcontrol.ui.utils.PutArgumentsString
@@ -26,20 +28,10 @@ import com.control.paymentcontrol.viewmodels.ServicePaymentViewModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
-import com.control.roomdatabase.repository.ui.YearItemRepository
-import com.control.roomdatabase.utils.Status
 import com.control.roomdatabase.utils.Status.SUCCESS
-import com.example.awesomedialog.AwesomeDialog
-import com.example.awesomedialog.body
-import com.example.awesomedialog.onNegative
-import com.example.awesomedialog.onPositive
-import com.example.awesomedialog.title
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
-import com.jackandphantom.carouselrecyclerview.CarouselLayoutManager
 import java.util.Arrays
-import java.util.Calendar
-import java.util.Objects
 
 class HomeFragment : BaseFragment() {
     private lateinit var binding: FragmentHomeBinding
@@ -48,16 +40,23 @@ class HomeFragment : BaseFragment() {
     private lateinit var adapterCarrousel: AdapterCarrousel
     private lateinit var adapterCircle: AdapterCircle
     private lateinit var adapterMonth: AdapterDataMonth
+    private lateinit var adapterPay: AdapterDataPayment
     private lateinit var viewModel: ServicePaymentViewModel
     private var positionCarrousel: Int = 0
-    private lateinit var yearItem:YearsEntity
+    private var yearItem:YearsEntity ?= null
+    private var monthItem:MonthEntity ?= null
     private lateinit var listMonth: List<MonthEntity>
     private lateinit var listMonthOriginal: List<MonthEntity>
+    private lateinit var spentList: List<SpentEntity>
+    private var selectMonth = false
+    private lateinit var controllerMov:ControllerDataMovements
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
+
     }
 
     override fun onCreateView(
@@ -65,20 +64,16 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater,container,false)
+        showOrHiddenMenuNavbar(true)
+        if (!yearItem?.name.equals(getPreferenceGson()?.name))
+            selectMonth = false
 
-        getOrderListYear()
+        yearItem = getPreferenceGson()
 
 
         onClickMoreNavbar(object:OnActionButtonNavBarMenu{
             override fun onActionPositionTwo() {
-                val items = viewModel.getYearList(requireActivity())
-
-                MaterialAlertDialogBuilder(requireActivity())
-                    .setTitle(resources.getString(R.string.select_year))
-                    .setItems(items) { _, which ->
-                        setAddYear(items[which.inc() - 1])
-                    }
-                    .show()
+                findNavController().navigate(R.id.action_homeFragment_to_addYearFragment)
             }
 
             override fun onActionPositionOne() {
@@ -93,155 +88,101 @@ class HomeFragment : BaseFragment() {
                 set(value) {}
         })
 
-        binding.addAction.setOnClickListener {
-            getOrderNewListMonth()
-        }
-
         binding.btnContinue.setOnClickListener {
-            val items = viewModel.getYearList(requireActivity())
-
-            MaterialAlertDialogBuilder(requireActivity())
-                .setTitle(resources.getString(R.string.select_year))
-                .setItems(items) { _, which ->
-                    setAddYear(items[which.inc() - 1])
-                }
-                .show()
+            findNavController().navigate(R.id.action_homeFragment_to_addYearFragment)
         }
-
+        getDataInit()
         return binding.root
     }
 
-    private fun recyclerViewCarousel(){
-        adapterCarrousel = AdapterCarrousel(listYear,object: AdapterCarrousel.OnClickButton{
-            override fun onClickDelete(item: YearsEntity,position: Int) {
-                dialogMessageOnAction(getStringRes(R.string.delete),getStringRes(R.string.delete_message),1,getStringRes(R.string.delete),object:OnClickInterface{
-                    override fun onClickAction() {
-                        setDeleteYear(item)
-                    }
-
-                })
-            }
-        })
-
-        adapterCircle = AdapterCircle(listYear.size,selectPosition,requireActivity())
-
-        binding.carouselRecyclerview.adapter = adapterCarrousel
-        binding.carouselRecyclerview.apply {
-            set3DItem(false)
-            setAlpha(true)
-            setInfinite(false)
+    private fun getDataInit(){
+        if (!isPreferenceData()){
+            binding.iconDate.setTextTitle(yearItem?.name.toString())
+            getOrderListMonth()
         }
 
-        binding.carouselRecyclerview.scrollToPosition(positionCarrousel)
-        binding.carouselRecyclerview.setItemSelectListener(object : CarouselLayoutManager.OnSelected {
-            override fun onItemSelected(position: Int) {
-                adapterCircle.updateSelect(position)
-                positionCarrousel = position
-                yearItem = gerYearItem()
-                getOrderListMonth()
+        binding.constrainEmpty.visibility = if (isPreferenceData()) View.VISIBLE else View.GONE
+        binding.mainConstra.visibility = if (!isPreferenceData()) View.VISIBLE else View.GONE
+        binding.movementCalendar.getBindingCalendar().txtTitle.text = getStringRes(R.string.add)
+        binding.movementCalendar.getBindingCalendar().tableCardResults.visibility = View.GONE
+        binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.GONE
+        if (selectMonth){
+            getOrderListMonth(true)
+        }
+        onActionClick()
+    }
+
+    private fun onActionClick(){
+        binding.iconDate.setOnClickListener{
+            findNavController().navigate(R.id.action_homeFragment_to_addYearFragment)
+        }
+
+        binding.movementCalendar.getBindingCalendar().cardTitle.setOnClickListener{
+            if (selectMonth){
+                binding.movementCalendar.getBindingCalendar().txtTitle.text = getStringRes(R.string.add)
+                selectMonth = false
+                if (!isPreferenceData()){
+                    getOrderListMonth()
+                }
+                binding.movementCalendar.getBindingCalendar().tableCardResults.visibility = View.GONE
+                binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.GONE
+            }else{
+                getOrderNewListMonth()
             }
-        })
+        }
 
-
-        binding.circlesRecyclerview.adapter = adapterCircle
-        binding.circlesRecyclerview.apply {
-            set3DItem(false)
-            setAlpha(true)
-            setInfinite(false)
-            setFlat(false)
-            setIsScrollingEnabled(true)
+        binding.movementCalendar.getBindingCalendar().btnContinue.setOnClickListener{
+            val bundle = Bundle()
+            bundle.putString(YEAR_SELECT,gson.toJson(yearItem))
+            bundle.putString(MONTH_SELECT,gson.toJson(monthItem))
+            //findNavController().navigate(R.id.action_homeFragment_to_addPaymentFragment,bundle)
+            findNavController().navigate(R.id.action_homeFragment_to_detailsMovementPayFragment,bundle)
         }
     }
 
     private fun recyclerViewMonth(){
         adapterMonth = AdapterDataMonth(listMonth,requireActivity(),object: AdapterDataMonth.OnClickButton{
             override fun onClickDelete(item: MonthEntity) {
-                viewModel.setDeleteMonthDataBase(requireActivity(), item)
-                viewModel.getDeleteMonthDataBase().observe(requireActivity()) {responseBase ->
-                    if (responseBase.status == SUCCESS){
-                        getOrderListMonth()
-                        dialogMessageTitle(getStringRes(R.string.body_dialog_delete_message_success))
-                    }else{
-                        dialogMessageDefault(getStringRes(R.string.error),
-                            getStringRes(R.string.body_dialog_message_data),
-                            1
-                        )
+                dialogMessageOnAction(getStringRes(R.string.delete),getStringRes(R.string.delete_message),1,getStringRes(R.string.delete),object:
+                    OnClickInterface {
+                    override fun onClickAction() {
+                        deleteMonth(item)
                     }
-                }
+
+                })
             }
 
             override fun onClickDetails(item: MonthEntity) {
-                val bundle = Bundle()
-                bundle.putString(YEAR_SELECT,gson.toJson( gerYearItem()))
-                bundle.putString(MONTH_SELECT,gson.toJson(item))
-                findNavController().navigate(R.id.action_homeFragment_to_addPaymentFragment,bundle)
+                monthItem = item
+                activeSelectDate()
             }
 
         })
-
-        binding.dataRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        binding.dataRecyclerView.adapter = adapterMonth
+        val layoutManager = GridLayoutManager(requireActivity(),3)
+        binding.movementCalendar.getBindingCalendar().reciclerView.layoutManager = layoutManager
+        binding.movementCalendar.getBindingCalendar().reciclerView.adapter = adapterMonth
 
     }
 
-    private fun getOrderListYear(){
-        viewModel.fullByYears(requireActivity()).observe(requireActivity()) {responseBase ->
-            if (responseBase != null) {
-                listYear = responseBase
-                binding.constrainEmpty.visibility = if (listYear.isNotEmpty()) View.GONE else View.VISIBLE
-                binding.mainConstra.visibility = if (listYear.isEmpty()) View.GONE else View.VISIBLE
-                recyclerViewCarousel()
-                getOrderListMonth()
-            }
-        }
-    }
+    private fun activeSelectDate(){
+        selectMonth = true
+        binding.movementCalendar.getBindingCalendar().btnContinue.visibility = View.VISIBLE
+        controllerMov = ControllerDataMovements(
+            binding.movementCalendar,
+            monthItem!!,
+            viewModel,
+            requireActivity(),
+            this,
+            this,
+            idNav = R.id.action_homeFragment_to_formularyPaymentFragment)
 
-    /**
-     * ADD NEW YEAR CONTROLLER
-     */
-    private fun setAddYear(yearItem:String){
-        viewModel.setAddYearDataBase(requireActivity(), YearsEntity(yearItem))
-        viewModel.getAddYearDataBase().observe(requireActivity()) {responseBase ->
-            if (responseBase.status == SUCCESS){
-                getOrderListYear()
-                var listMonthInput = requireActivity().resources.getStringArray(R.array.month)
-                /*listMonthInput.forEach { name ->
-                    setAddMonth(name,responseBase.)
-                }*/
-                println("RESPONSE DATA: "+responseBase.message)
+        controllerMov.getOrderSpent()
 
-                dialogMessageTitle(getStringRes(R.string.body_dialog_message_success))
-            }else{
-                dialogMessageDefault(getStringRes(R.string.error),
-                    getStringRes(R.string.body_dialog_message_data),
-                    1
-                )
-            }
-        }
-    }
-
-    /**
-     * Delete Year
-     * */
-    private fun setDeleteYear(yearItem:YearsEntity){
-        viewModel.setDeleteYearDataBase(requireActivity(), yearItem)
-        viewModel.getDeleteYearDataBase().observe(requireActivity()) {responseBase ->
-            if (responseBase.status == SUCCESS){
-                dialogMessageTitle(getStringRes(R.string.success_delete))
-                getOrderListYear()
-                positionCarrousel = if (listYear.isNotEmpty()) 0 else -1
-            }else{
-                dialogMessageDefault(getStringRes(R.string.error),
-                    getStringRes(R.string.body_dialog_message_data),
-                    1
-                )
-            }
-        }
     }
 
 
-    private fun getOrderListMonth(){
-        viewModel.fullByMonths(requireActivity(),gerYearItem().id.toString()).observe(requireActivity()) {responseBase ->
+    private fun getOrderListMonth(isReset:Boolean = false){
+        viewModel.fullByMonths(requireActivity(),yearItem?.id.toString()).observe(requireActivity()) {responseBase ->
             if (responseBase != null) {
                 val result = mutableListOf<MonthEntity>()
                 result.addAll(responseBase)
@@ -249,9 +190,14 @@ class HomeFragment : BaseFragment() {
                 listMonth = result
                 listMonthOriginal = responseBase
                 recyclerViewMonth()
+
+                if (isReset && monthItem != null){
+                    monthItem = listMonth.filter { item ->  monthItem!!.id.equals(item.id)}.component1()
+                    activeSelectDate()
+                }
             }
-            binding.emptyMonth.visibility = if (listMonthOriginal.isEmpty()) View.VISIBLE else View.GONE
-            binding.dataRecyclerView.visibility = if (listMonthOriginal.isEmpty()) View.GONE else View.VISIBLE
+
+            binding.movementCalendar.getBindingCalendar().empty.visibility = if (listMonthOriginal.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -262,7 +208,7 @@ class HomeFragment : BaseFragment() {
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(resources.getString(R.string.select_month))
             .setItems(list) { _, which ->
-                setAddMonth(list[which.inc() - 1],gerYearItem().id.toString())
+                setAddMonth(list[which.inc() - 1],yearItem?.id.toString())
             }
             .show()
     }
@@ -285,12 +231,22 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-
-    private fun gerYearItem():YearsEntity{
-        if ( listYear != null && listYear.isNotEmpty() && positionCarrousel <= listYear.size){
-            return listYear[positionCarrousel]
+    /**
+     * Elimina mes
+     */
+    private fun deleteMonth(item:MonthEntity){
+        viewModel.setDeleteMonthDataBase(requireActivity(), item)
+        viewModel.getDeleteMonthDataBase().observe(requireActivity()) {responseBase ->
+            if (responseBase.status == SUCCESS){
+                getOrderListMonth()
+                dialogMessageTitle(getStringRes(R.string.body_dialog_delete_message_success))
+            }else{
+                dialogMessageDefault(getStringRes(R.string.error),
+                    getStringRes(R.string.body_dialog_message_data),
+                    1
+                )
+            }
         }
-        return YearsEntity("")
     }
 
 }

@@ -1,19 +1,19 @@
 package com.control.paymentcontrol.ui.base
 
-import android.app.Notification.Action
 import android.content.Context
-import android.content.DialogInterface.OnClickListener
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import com.control.paymentcontrol.R
-import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.utils.FormatsMoney
 import com.control.paymentcontrol.ui.utils.InterfaceNavBar
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
+import com.control.paymentcontrol.ui.utils.PreferenceCacheData
+import com.control.paymentcontrol.ui.utils.SharedPrefArguments
+import com.control.roomdatabase.entities.YearsEntity
 import com.example.awesomedialog.AwesomeDialog
 import com.example.awesomedialog.body
 import com.example.awesomedialog.icon
@@ -23,11 +23,11 @@ import com.example.awesomedialog.position
 import com.example.awesomedialog.title
 import com.google.gson.Gson
 
+
 open class BaseFragment : Fragment() {
     private lateinit var interfaceNavBar: InterfaceNavBar
     protected var gson = Gson()
     protected var format = FormatsMoney()
-
     protected fun showOrHiddenNavbar(boolean: Boolean){
         if (requireActivity() is InterfaceNavBar) {
             interfaceNavBar =  requireActivity() as InterfaceNavBar
@@ -41,6 +41,7 @@ open class BaseFragment : Fragment() {
             interfaceNavBar.showOrHiddenMenuNavbar(boolean)
         }
     }
+
     protected fun hideKeyboard(view: View) {
         if (view != null) {
             val inputMethodManager =
@@ -55,10 +56,45 @@ open class BaseFragment : Fragment() {
         }
     }
 
-    protected fun getStringRes(resource:Int):String{
+    protected fun callBackPressed(enable:Boolean){
+        var callback = object :OnBackPressedCallback(false){
+            override fun handleOnBackPressed() {
+                if (!enable){
+                    isEnabled = true
+                    requireActivity().onBackPressed()
+                }
+
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(),callback)
+    }
+    protected fun addPreferenceCache(value:String ){
+        val sharedPreferences = requireActivity().getSharedPreferences(
+            SharedPrefArguments.CONFIG_PREFERENCE, Context.MODE_PRIVATE)
+
+        val editor = sharedPreferences.edit()
+        editor.putString(SharedPrefArguments.KEY_YEAR, value)
+        editor.apply()
+    }
+
+    protected fun getPreferenceCache(): String?{
+        val sharedPreferences = requireActivity().getSharedPreferences(
+            SharedPrefArguments.CONFIG_PREFERENCE, Context.MODE_PRIVATE)
+        return sharedPreferences.getString(SharedPrefArguments.KEY_YEAR, "")
+    }
+
+    protected fun isPreferenceData(): Boolean{
+        return getPreferenceCache() == null || getPreferenceCache()?.isEmpty() == true
+    }
+    protected fun getPreferenceGson(): YearsEntity?{
+        return Gson().fromJson(getPreferenceCache(), YearsEntity::class.java)
+    }
+
+
+    fun getStringRes(resource:Int):String{
         return requireActivity().getString(resource)
     }
-    protected fun dialogMessageDefault(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),type:Int = 0){
+    fun dialogMessageDefault(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),type:Int = 0){
         AwesomeDialog.build(requireActivity())
             .title(title)
             .body(body)
@@ -71,7 +107,7 @@ open class BaseFragment : Fragment() {
             .onPositive(getStringRes(R.string.accept), R.drawable.background_button_accept) {}
     }
 
-    protected fun dialogMessageTitle(title:String = getStringRes(R.string.success),type:Int = 0){
+    fun dialogMessageTitle(title:String = getStringRes(R.string.success),type:Int = 0){
         AwesomeDialog.build(requireActivity())
             .title(title)
             .icon(
@@ -83,7 +119,7 @@ open class BaseFragment : Fragment() {
             .onPositive(getStringRes(R.string.accept), R.drawable.background_button_accept) {}
     }
 
-    protected fun dialogMessageOnAction(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),
+    fun dialogMessageOnAction(title:String = getStringRes(R.string.success),body:String = getStringRes(R.string.body_dialog_message_success),
             type:Int = 0,titleButton:String = "",listener:OnClickInterface){
 
         AwesomeDialog.build(requireActivity())

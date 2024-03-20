@@ -70,7 +70,7 @@ class AddPaymentFragment : BaseFragment() {
                 val bundle = Bundle()
                 bundle.putString(MONTH_SELECT,gson.toJson(monthItem))
                 bundle.putInt(TYPE_ENT,1)
-                findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
+               // findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
             }
 
             override fun onActionPositionOne() {
@@ -79,7 +79,7 @@ class AddPaymentFragment : BaseFragment() {
                 bundle.putInt(TYPE_ENT,1)
                 bundle.putString(ID_MONTH,monthItem.id.toString())
                 bundle.putBoolean(TYPE_EDIT,false)
-                findNavController().navigate(R.id.action_addPaymentFragment_to_paymentFavoritesFragment,bundle)
+               // findNavController().navigate(R.id.action_addPaymentFragment_to_paymentFavoritesFragment,bundle)
             }
 
             override var attr: List<AttributesDesign>
@@ -171,7 +171,7 @@ class AddPaymentFragment : BaseFragment() {
                 bundle.putString(PAYMENT_SELECT,gson.toJson(item))
                 bundle.putInt(TYPE_ENT,1)
                 bundle.putBoolean(TYPE_EDIT,true)
-                findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
+                //findNavController().navigate(R.id.action_addPaymentFragment_to_formularyPaymentFragment,bundle)
             }
 
             override fun onEdit(item: SpentEntity, check: Boolean) {
@@ -187,7 +187,7 @@ class AddPaymentFragment : BaseFragment() {
     }
 
     private fun recyclerViewDataTable(){
-        adapterPayTable = AdapterDataPaymentTable(spentList,requireActivity(),object:AdapterDataPaymentTable.OnClickButton{
+        /*adapterPayTable = AdapterDataPaymentTable(spentList,requireActivity(),object:AdapterDataPaymentTable.OnClickButton{
             override fun onEdit(item: SpentEntity, check: Boolean) {
                 viewModel.updateAddSpentStatus(requireActivity(), item)
                 calcDetails()
@@ -196,7 +196,7 @@ class AddPaymentFragment : BaseFragment() {
         })
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        binding.recyclerView.adapter = adapterPayTable
+        binding.recyclerView.adapter = adapterPayTable*/
 
     }
 

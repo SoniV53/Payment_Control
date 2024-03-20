@@ -6,33 +6,22 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.control.paymentcontrol.ui.base.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
-    <fragment
         android:id="@+id/homeFragment"
         android:name="com.control.paymentcontrol.ui.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_addPaymentFragment"
-            app:destination="@id/addPaymentFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_paymentFavoritesFragment"
             app:destination="@id/paymentFavoritesFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/addPaymentFragment"
-        android:name="com.control.paymentcontrol.ui.payment.AddPaymentFragment"
-        android:label="fragment_add_payment"
-        tools:layout="@layout/fragment_add_payment" >
         <action
-            android:id="@+id/action_addPaymentFragment_to_formularyPaymentFragment"
+            android:id="@+id/action_homeFragment_to_addYearFragment"
+            app:destination="@id/addYearFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_detailsMovementPayFragment"
+            app:destination="@id/detailsMovementPayFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_formularyPaymentFragment"
             app:destination="@id/formularyPaymentFragment" />
-        <action
-            android:id="@+id/action_addPaymentFragment_to_paymentFavoritesFragment"
-            app:destination="@id/paymentFavoritesFragment" />
     </fragment>
     <fragment
         android:id="@+id/formularyPaymentFragment"
@@ -48,4 +37,31 @@
             android:id="@+id/action_paymentFavoritesFragment_to_formularyPaymentFragment"
             app:destination="@id/formularyPaymentFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/generateTableFragment"
+        android:name="com.control.paymentcontrol.component.GenerateTableFragment"
+        android:label="fragment_generate_table"
+        tools:layout="@layout/fragment_generate_table" />
+    <fragment
+        android:id="@+id/detailsMovementPayFragment"
+        android:name="com.control.paymentcontrol.ui.payment.detailsPayment.DetailsMovementPayFragment"
+        android:label="fragment_details_movement_pay"
+        tools:layout="@layout/fragment_details_movement_pay" >
+        <action
+            android:id="@+id/action_detailsMovementPayFragment_to_formularyPaymentFragment"
+            app:destination="@id/formularyPaymentFragment" />
+        <action
+            android:id="@+id/action_detailsMovementPayFragment_to_paymentFavoritesFragment"
+            app:destination="@id/paymentFavoritesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addYearFragment"
+        android:name="com.control.paymentcontrol.ui.home.AddYearFragment"
+        android:label="fragment_add_year"
+        tools:layout="@layout/fragment_add_year" />
+    <fragment
+        android:id="@+id/selectDestineFragment"
+        android:name="com.control.paymentcontrol.ui.base.SelectDestineFragment"
+        android:label="fragment_select_destine"
+        tools:layout="@layout/fragment_select_destine" />
 </navigation>

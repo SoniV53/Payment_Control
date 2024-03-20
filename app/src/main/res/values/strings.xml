@@ -21,6 +21,8 @@
     <string name="success_delete">Se eliminó con éxito</string>
     <string name="view_details">Ver Detalles</string>
     <string name="title">Título</string>
+    <string name="total">Total</string>
+    <string name="balance">Presupuesto</string>
 
 
     <string-array name="month">

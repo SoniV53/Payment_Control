@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.control.paymentcontrol.models.SpentAdapterModel
 import com.control.roomdatabase.entities.MonthEntity
 import com.control.roomdatabase.entities.SpentEntity
 import com.control.roomdatabase.entities.YearsEntity
@@ -143,6 +144,25 @@ class ServicePaymentViewModel : ViewModel() {
         if (title.isNotEmpty())
             return listSpent.filter { item -> item.title.contains(title) }.toList()
         else return listSpent
+    }
+
+
+    fun getListMovementSpent(spentList: List<SpentEntity>):List<SpentAdapterModel>{
+        val result = mutableListOf<SpentAdapterModel>()
+        if (spentList != null && spentList.isNotEmpty()){
+            result.add(SpentAdapterModel(SpentEntity(""),"Title"))
+            spentList?.forEach { item->
+                if (item.cancelPay.equals("1"))
+                    result.add(SpentAdapterModel(item))
+            }
+
+            spentList?.forEach { item->
+                if (!item.cancelPay.equals("1"))
+                    result.add(SpentAdapterModel(item))
+            }
+        }
+
+        return result
     }
 }
 

@@ -15,6 +15,7 @@ import com.control.paymentcontrol.databinding.FragmentHomeBinding
 import com.control.paymentcontrol.databinding.FragmentPaymentFavoritesBinding
 import com.control.paymentcontrol.models.AttributesDesign
 import com.control.paymentcontrol.ui.base.BaseFragment
+import com.control.paymentcontrol.ui.payment.detailsPayment.ControllerDataMovements
 import com.control.paymentcontrol.ui.utils.OnActionButtonNavBarMenu
 import com.control.paymentcontrol.ui.utils.OnClickInterface
 import com.control.paymentcontrol.ui.utils.PutArgumentsString
@@ -33,6 +34,7 @@ class PaymentFavoritesFragment : BaseFragment() {
     private var type = 0
     private var idMonth = ""
     private var isSelectTodo = false
+    private lateinit var controllerMov:ControllerDataMovements
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[ServicePaymentViewModel::class.java]
@@ -47,7 +49,6 @@ class PaymentFavoritesFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPaymentFavoritesBinding.inflate(inflater,container,false)
-
         if (type == 1){
             showOrHiddenMenuNavbar(false)
         }
@@ -109,6 +110,19 @@ class PaymentFavoritesFragment : BaseFragment() {
         }
 
         return binding.root
+    }
+
+    private fun  init(){
+        /*controllerMov = ControllerDataMovements(
+            binding.movementCalendar,
+            monthItem,
+            viewModel,
+            requireActivity(),
+            this,
+            this,
+            idNav = R.id.action_detailsMovementPayFragment_to_formularyPaymentFragment)
+
+        controllerMov.getOrderSpent()*/
     }
 
     private fun recyclerViewData(){
